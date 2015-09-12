@@ -2,6 +2,8 @@
 
 import argparse
 import atexit
+import os
+import os.path
 from subprocess import Popen
 
 BOLD = "\033[1m"
@@ -9,8 +11,7 @@ CYAN = "\033[36m"
 RED = '\033[31m'
 PLAIN = '\033[0m'
 
-gulp_popen = None
-karma_popen = None
+popens = []
 
 
 def main():
@@ -50,29 +51,46 @@ def start_processes(opts):
 
 
 def start_gulp_process():
-    global gulp_popen
+    global popens
     
     print_formatted("gulp watch", BOLD)
-    gulp_popen = Popen(["gulp", "watch"])
+    popens.append(Popen(["gulp", "watch"]))
 
 
 def start_karma_process():
-    global karma_popen
+    global popens
+    karma_conf = "karma.conf.js"
+    karma_conf_dir = find_file_up_hierarchy(karma_conf)
+
+    if karma_conf_dir is None:
+        raise FileNotFoundError(
+            RED + BOLD + 'Could not start karma because "' + karma_conf + '" could not be found.' + PLAIN)
+    else:
+        print_formatted("karma start", BOLD)
+        popens.append(Popen(["karma", "start"], cwd=karma_conf_dir))
+
+
+def find_file_up_hierarchy(file):
+    next_path = os.getcwd()
+    path = None
+    found = False
     
-    print_formatted("karma start", BOLD)
-    karma_popen = Popen(["karma", "start"])
+    while not found and path != next_path:
+        path = next_path
+        found = file in os.listdir(path)
+        next_path = os.path.dirname(path)
+    
+    return path if found else None
 
 
 def wait_on_processes():
-    if gulp_popen is not None:
-        gulp_popen.wait()
-    if karma_popen is not None:
-        gulp_popen.wait()
+    for popen in popens:
+        popen.wait()
 
 
 def terminate_processes():
-    terminate_process(gulp_popen)
-    terminate_process(karma_popen)
+    for popen in popens:
+        terminate_process(popen)
 
 
 def terminate_process(popen):
