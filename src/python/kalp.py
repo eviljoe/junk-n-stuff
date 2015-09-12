@@ -96,8 +96,8 @@ def terminate_processes():
 def terminate_process(popen):
     terminated = False
     
-    if popen is not None and popen.poll() is not None:
-        print_formatted("Killing process: " + " ".join(popen.args()), RED)
+    if popen is not None and popen.poll() is None:
+        print_formatted("Killing process: " + " ".join(popen.args), RED)
         popen.terminate()
         terminated = True
     
