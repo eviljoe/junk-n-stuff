@@ -10,6 +10,7 @@ BOLD = "\033[1m"
 CYAN = "\033[36m"
 RED = '\033[31m'
 PLAIN = '\033[0m'
+VERSION = 1.1
 
 popens = []
 
@@ -22,56 +23,72 @@ def main():
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(
-        description="A utility to help manage `gulp watch' and `karma' in development enviornments")
+    desc = "A utility to help manage `gulp watch' and `karma' in development enviornments\nVersion: {}".format(VERSION)
+    parser = argparse.ArgumentParser(description=desc)
         
-    parser.add_argument("-K", "--no-karma", action="store_true", default=False,
-                        help="Do not start the `gulp watch' subprocess (default: %(default)s)")
-    parser.add_argument("-G", "--no-gulp", action="store_true", default=False,
+    parser.add_argument("-G", "--no-gulp", action="store_true", default=False, dest="no_gulp",
                         help="Do not start the `karma' subprocess (default: %(default)s)")
+    parser.add_argument("-K", "--no-karma", action="store_true", default=False, dest="no_karma",
+                        help="Do not start the `gulp watch' subprocess (default: %(default)s)")
+    parser.add_argument("-r", "--root", action="append", default=[], metavar="ROOT", dest="roots",
+                        help="Specify a root directory (default: .)")
     
-    return parser.parse_args()
+    opts = parser.parse_args()
+    opts.roots = [os.getcwd()] if not opts.roots else opts.roots
+    validate_directories(opts.roots)
+    
+    return opts
+
+
+def validate_directories(directories):
+    for directory in directories:
+        if not os.path.exists(directory):
+            raise FileNotFoundError(format_error("Root directory does not exist: {}".format(directory)))
+        elif not os.path.isdir(directory):
+            raise NotADirectoryError(format_error("Root directory is not a directory: {}".format(directory)))
 
 
 def start_processes(opts):
     process_count = 0
     
-    print_formatted("Starting Processes:", BOLD, CYAN)
-    
-    if not opts.no_gulp:
-        start_gulp_process()
-        process_count += 1
+    for root in opts.roots:
+        root = os.path.abspath(root)
+        print_formatted("Starting Processes: {}".format(root), BOLD, CYAN)
         
-    if not opts.no_karma:
-        start_karma_process()
-        process_count += 1
-    
-    if process_count == 0:
-        print_formatted("None", BOLD, RED)
+        if not opts.no_gulp:
+            start_gulp_process(root)
+            process_count += 1
+            
+        if not opts.no_karma:
+            start_karma_process(root)
+            process_count += 1
+        
+        if process_count == 0:
+            print_formatted("None", BOLD, RED)
 
 
-def start_gulp_process():
+def start_gulp_process(cwd):
     global popens
     
     print_formatted("gulp watch", BOLD)
-    popens.append(Popen(["gulp", "watch"]))
+    popens.append(Popen(["gulp", "watch"], cwd=cwd))
 
 
-def start_karma_process():
+def start_karma_process(cwd):
     global popens
     karma_conf = "karma.conf.js"
-    karma_conf_dir = find_file_up_hierarchy(karma_conf)
+    karma_conf_dir = find_file_up_hierarchy(cwd, karma_conf)
 
     if karma_conf_dir is None:
-        raise FileNotFoundError(
-            RED + BOLD + 'Could not start karma because "' + karma_conf + '" could not be found.' + PLAIN)
+        raise FileNotFoundError(format_error(
+            'Could not start karma because "{}" could not be found.'.format(karma_conf)))
     else:
         print_formatted("karma start", BOLD)
         popens.append(Popen(["karma", "start"], cwd=karma_conf_dir))
 
 
-def find_file_up_hierarchy(file):
-    next_path = os.getcwd()
+def find_file_up_hierarchy(root, file):
+    next_path = root
     path = None
     found = False
     
@@ -97,15 +114,23 @@ def terminate_process(popen):
     terminated = False
     
     if popen is not None and popen.poll() is None:
-        print_formatted("Killing process: " + " ".join(popen.args), RED)
+        print_formatted("Killing process: {}".format(" ".join(popen.args)), RED)
         popen.terminate()
         terminated = True
     
     return terminated
 
 
+def format_error(text):
+    return format_string(text, BOLD, RED)
+
+
+def format_string(text, *formats):
+    return ''.join(formats) + text + PLAIN
+
+
 def print_formatted(text, *formats):
-    print(''.join(formats) + text + PLAIN)
+    print(format_string(text, *formats))
 
 
 if __name__ == "__main__":
