@@ -2,6 +2,7 @@
 
 import argparse
 import atexit
+import json
 import os
 import os.path
 from subprocess import Popen
@@ -18,8 +19,14 @@ popens = []
 def main():
     atexit.register(terminate_processes)
     opts = parse_args()
+    do_npm_installs(opts)
     start_processes(opts)
     wait_on_processes()
+
+
+# ################# #
+# Options Functions #
+# ################# #
 
 
 def parse_args():
@@ -36,6 +43,7 @@ def parse_args():
     opts = parser.parse_args()
     opts.roots = [os.getcwd()] if not opts.roots else opts.roots
     validate_directories(opts.roots)
+    opts.roots = list(map(lambda root: os.path.abspath(root), opts.roots))
     
     return opts
 
@@ -48,11 +56,70 @@ def validate_directories(directories):
             raise NotADirectoryError(format_error("Root directory is not a directory: {}".format(directory)))
 
 
+# ##################### #
+# NPM Install Functions #
+# ##################### #
+
+
+def do_npm_installs(opts):
+    for root in opts.roots:
+        package_json_dir, package_json = get_package_json(root)
+        
+        if needs_npm_install(package_json_dir, package_json):
+            print_formatted("npm install required: {}".format(root), BOLD, CYAN)
+            npm_install(package_json_dir)
+
+
+def get_package_json(root):
+    package_json_file = "package.json"
+    package_json_dir = find_file_up_hierarchy(root, package_json_file)
+    package_json = None
+    
+    if package_json_dir is None:
+        raise FileNotFoundError(format_error(
+            'Could not check if npm install needed becuase "{}" could not be found.'.format(package_json_file)))
+    
+    with open(os.path.join(package_json_dir, package_json_file)) as package_json_data:
+        package_json = json.load(package_json_data)
+    
+    return package_json_dir, package_json
+
+
+def needs_npm_install(package_json_dir, package_json):  # JOE todo also check "dependencies"
+    it = iter(package_json["devDependencies"])
+    done = object()
+    dependency = next(it, done)
+    all_installed = True
+    
+    while dependency is not done and all_installed:
+        all_installed = dependency_installed(package_json_dir, dependency)
+        dependency = next(it, done)
+        
+    return not all_installed
+
+
+def dependency_installed(package_json_dir, dependency):
+    return os.path.isdir(os.path.join(package_json_dir, "node_modules", str(dependency)))
+
+
+def has_correct_version(package_json_dir, dependency):  # JOE todo
+    return True
+    
+    
+def npm_install(package_json_dir):
+    popen = Popen(["npm", "install"], cwd=package_json_dir)
+    popen.wait()
+
+
+# ####################### #
+# Process Mgmt. Functions #
+# ####################### #
+
+
 def start_processes(opts):
     process_count = 0
     
     for root in opts.roots:
-        root = os.path.abspath(root)
         print_formatted("Starting Processes: {}".format(root), BOLD, CYAN)
         
         if not opts.no_gulp:
@@ -82,22 +149,9 @@ def start_karma_process(cwd):
     if karma_conf_dir is None:
         raise FileNotFoundError(format_error(
             'Could not start karma because "{}" could not be found.'.format(karma_conf)))
-    else:
-        print_formatted("karma start", BOLD)
-        popens.append(Popen(["karma", "start"], cwd=karma_conf_dir))
-
-
-def find_file_up_hierarchy(root, file):
-    next_path = root
-    path = None
-    found = False
     
-    while not found and path != next_path:
-        path = next_path
-        found = file in os.listdir(path)
-        next_path = os.path.dirname(path)
-    
-    return path if found else None
+    print_formatted("karma start", BOLD)
+    popens.append(Popen(["karma", "start"], cwd=karma_conf_dir))
 
 
 def wait_on_processes():
@@ -119,6 +173,24 @@ def terminate_process(popen):
         terminated = True
     
     return terminated
+
+
+# ################# #
+# Utility Functions #
+# ################# #
+
+
+def find_file_up_hierarchy(root, file):
+    next_path = root
+    path = None
+    found = False
+    
+    while not found and path != next_path:
+        path = next_path
+        found = file in os.listdir(path)
+        next_path = os.path.dirname(path)
+    
+    return path if found else None
 
 
 def format_error(text):
