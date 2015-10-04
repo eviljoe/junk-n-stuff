@@ -2,6 +2,7 @@
 
 import argparse
 import atexit
+import itertools
 import json
 import os
 import os.path
@@ -85,24 +86,42 @@ def get_package_json(root):
     return package_json_dir, package_json
 
 
-def needs_npm_install(package_json_dir, package_json):  # JOE todo also check "dependencies"
-    it = iter(package_json["devDependencies"])
+def needs_npm_install(package_json_dir, package_json):
+    return (dependencies_need_install("devDependencies", package_json_dir, package_json) or
+            dependencies_need_install("dependencies", package_json_dir, package_json))
+
+
+def dependencies_need_install(dependency_type, package_json_dir, package_json):
+    need_install = False
     done = object()
+    it = iter(package_json.get(dependency_type, []))
     dependency = next(it, done)
-    all_installed = True
     
-    while dependency is not done and all_installed:
-        all_installed = dependency_installed(package_json_dir, dependency)
+    print(dependency_type)
+    
+    while dependency is not done and not need_install:
+        need_install = dependency_needs_install(dependency_type, package_json_dir, package_json, dependency)
         dependency = next(it, done)
-        
-    return not all_installed
+
+
+def dependency_needs_install(dependency_type, package_json_dir, package_json, dependency):
+    return not (dependency_installed(package_json_dir, dependency) and
+                dependency_has_correct_version(dependency_type, package_json_dir, package_json, dependency))
 
 
 def dependency_installed(package_json_dir, dependency):
     return os.path.isdir(os.path.join(package_json_dir, "node_modules", str(dependency)))
 
 
-def has_correct_version(package_json_dir, dependency):  # JOE todo
+def dependency_has_correct_version(dependency_type, package_json_dir, package_json, dependency):
+    print("type={}, dependency={}, version={}".format(dependency_type, dependency, package_json[dependency_type][dependency]))  # JOE o
+    expected_version = package_json[dependency_type][dependency]
+    actual_version = None
+    correct = False
+    
+    with open(os.path.join(package_json_dir, "node_modules", dependency, "package.json")) as package_json_data:
+        actual_version = json.load(package_json_data)["version"]
+    
     return True
     
     
