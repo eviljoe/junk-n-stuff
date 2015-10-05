@@ -6,6 +6,7 @@ import itertools
 import json
 import os
 import os.path
+import re
 from subprocess import Popen
 
 BOLD = "\033[1m"
@@ -34,6 +35,8 @@ def parse_args():
     desc = "A utility to help manage `gulp watch' and `karma' in development enviornments\nVersion: {}".format(VERSION)
     parser = argparse.ArgumentParser(description=desc)
         
+    parser.add_argument("--dry-run", action="store_true", default=False, dest="dry_run",
+                        help="Just output what actions will be peformed without actually performing them")
     parser.add_argument("-G", "--no-gulp", action="store_true", default=False, dest="no_gulp",
                         help="Do not start the `karma' subprocess (default: %(default)s)")
     parser.add_argument("-K", "--no-karma", action="store_true", default=False, dest="no_karma",
@@ -63,12 +66,17 @@ def validate_directories(directories):
 
 
 def do_npm_installs(opts):
+    install_needed = False
+    
     for root in opts.roots:
         package_json_dir, package_json = get_package_json(root)
         
         if needs_npm_install(package_json_dir, package_json):
             print_formatted("npm install required: {}".format(root), BOLD, CYAN)
-            npm_install(package_json_dir)
+            install_needed = True
+    
+    if not opts.dry_run and install_needed:
+        npm_install(package_json_dir)
 
 
 def get_package_json(root):
@@ -92,39 +100,73 @@ def needs_npm_install(package_json_dir, package_json):
 
 
 def dependencies_need_install(dependency_type, package_json_dir, package_json):
-    need_install = False
-    done = object()
     it = iter(package_json.get(dependency_type, []))
-    dependency = next(it, done)
+    dep = next((dependency for dependency in it if dependency_needs_install(
+        dependency_type, package_json_dir, package_json, dependency)), None)
     
-    print(dependency_type)
-    
-    while dependency is not done and not need_install:
-        need_install = dependency_needs_install(dependency_type, package_json_dir, package_json, dependency)
-        dependency = next(it, done)
+    return dep is not None
 
 
 def dependency_needs_install(dependency_type, package_json_dir, package_json, dependency):
-    return not (dependency_installed(package_json_dir, dependency) and
-                dependency_has_correct_version(dependency_type, package_json_dir, package_json, dependency))
+    return not (is_dependency_installed(package_json_dir, dependency) and
+                is_dependency_is_up_to_date(dependency_type, package_json_dir, package_json, dependency))
 
 
-def dependency_installed(package_json_dir, dependency):
+def is_dependency_installed(package_json_dir, dependency):
     return os.path.isdir(os.path.join(package_json_dir, "node_modules", str(dependency)))
 
 
-def dependency_has_correct_version(dependency_type, package_json_dir, package_json, dependency):
-    print("type={}, dependency={}, version={}".format(dependency_type, dependency, package_json[dependency_type][dependency]))  # JOE o
+def is_dependency_is_up_to_date(dependency_type, package_json_dir, package_json, dependency):
     expected_version = package_json[dependency_type][dependency]
     actual_version = None
-    correct = False
+    up_to_date = False
     
-    with open(os.path.join(package_json_dir, "node_modules", dependency, "package.json")) as package_json_data:
-        actual_version = json.load(package_json_data)["version"]
+    try:
+        with open(os.path.join(package_json_dir, "node_modules", dependency, "package.json")) as package_json_data:
+            actual_version = json.load(package_json_data)["version"]
+        
+        up_to_date = is_version_is_up_to_date(expected_version, actual_version)
+    except FileNotFoundError as e:  # Some packages don't actually have a package.json
+        up_to_date = True
+
+    return up_to_date
+
+
+def is_version_is_up_to_date(expected_version, actual_version):
+    up_to_date = False
     
-    return True
+    if expected_version.startswith("^") or expected_version.startswith("~"):
+        e_major, e_minor, e_patch = parse_version(expected_version)
+        a_major, a_minor, a_patch = parse_version(actual_version)
+        
+        # major version
+        if e_major < a_major:
+            up_to_date = True
+        elif e_major > a_major:
+            up_to_date = False
+        # minor version
+        elif e_minor < a_minor:
+            up_to_date = True
+        elif e_minor > a_minor:
+            up_to_date = False
+        # patch
+        else:
+            up_to_date = e_patch <= a_patch
+    else:
+        up_to_date = expected_version == actual_version
     
+    return up_to_date
+
+
+def parse_version(version):
+    parts = version.split(sep=".")
+    major = int(re.findall(r"\d+", parts[0])[0])
+    minor = int(re.findall(r"\d+", parts[1])[0])
+    patch = int(re.findall(r"\d+", parts[2])[0])
     
+    return major, minor, patch
+
+
 def npm_install(package_json_dir):
     popen = Popen(["npm", "install"], cwd=package_json_dir)
     popen.wait()
@@ -142,25 +184,27 @@ def start_processes(opts):
         print_formatted("Starting Processes: {}".format(root), BOLD, CYAN)
         
         if not opts.no_gulp:
-            start_gulp_process(root)
+            start_gulp_process(opts, root)
             process_count += 1
             
         if not opts.no_karma:
-            start_karma_process(root)
+            start_karma_process(opts, root)
             process_count += 1
         
         if process_count == 0:
             print_formatted("None", BOLD, RED)
 
 
-def start_gulp_process(cwd):
+def start_gulp_process(opts, cwd):
     global popens
     
     print_formatted("gulp watch", BOLD)
-    popens.append(Popen(["gulp", "watch"], cwd=cwd))
+    
+    if not opts.dry_run:
+        popens.append(Popen(["gulp", "watch"], cwd=cwd))
 
 
-def start_karma_process(cwd):
+def start_karma_process(opts, cwd):
     global popens
     karma_conf = "karma.conf.js"
     karma_conf_dir = find_file_up_hierarchy(cwd, karma_conf)
@@ -170,7 +214,9 @@ def start_karma_process(cwd):
             'Could not start karma because "{}" could not be found.'.format(karma_conf)))
     
     print_formatted("karma start", BOLD)
-    popens.append(Popen(["karma", "start"], cwd=karma_conf_dir))
+    
+    if not opts.dry_run:
+        popens.append(Popen(["karma", "start"], cwd=karma_conf_dir))
 
 
 def wait_on_processes():
