@@ -39,6 +39,9 @@ case "$1" in
     *.jar) read_java_archive "$1" ;;
     *.war) read_java_archive "$1" ;;
     
+    # ASAR
+    *.asar) asar2 list "$1" ;;
+    
     # FLAC
     *.flac) metaflac --list "$1" 2>/dev/null ;;
 esac
