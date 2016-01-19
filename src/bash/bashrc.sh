@@ -88,5 +88,6 @@ alias df="df -h"
 alias du="du -h"
 alias emacs="emacs -nw"
 alias path='printf "%s\n" "${PATH}"'
+alias pwdp='pwd -P'
 alias resource="source ~/.bashrc"
 alias volume="pavucontrol"
