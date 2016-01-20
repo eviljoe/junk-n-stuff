@@ -4,15 +4,12 @@ import argparse
 import atexit
 import itertools
 import json
+import kutils
 import os
 import os.path
 import re
 from subprocess import Popen
 
-BOLD = "\033[1m"
-CYAN = "\033[36m"
-RED = '\033[31m'
-PLAIN = '\033[0m'
 VERSION = 1.1
 
 popens = []
@@ -55,9 +52,9 @@ def parse_args():
 def validate_directories(directories):
     for directory in directories:
         if not os.path.exists(directory):
-            raise FileNotFoundError(format_error("Root directory does not exist: {}".format(directory)))
+            raise FileNotFoundError(kutils.format_error("Root directory does not exist: {}".format(directory)))
         elif not os.path.isdir(directory):
-            raise NotADirectoryError(format_error("Root directory is not a directory: {}".format(directory)))
+            raise NotADirectoryError(kutils.format_error("Root directory is not a directory: {}".format(directory)))
 
 
 # ##################### #
@@ -72,7 +69,7 @@ def do_npm_installs(opts):
         package_json_dir, package_json = get_package_json(root)
         
         if needs_npm_install(package_json_dir, package_json):
-            print_formatted("npm install required: {}".format(root), BOLD, CYAN)
+            kutils.print_formatted("npm install required: {}".format(root), kutils.BOLD, kutils.CYAN)
             install_needed = True
     
     if not opts.dry_run and install_needed:
@@ -81,11 +78,11 @@ def do_npm_installs(opts):
 
 def get_package_json(root):
     package_json_file = "package.json"
-    package_json_dir = find_file_up_hierarchy(root, package_json_file)
+    package_json_dir = kutils.find_file_up_hierarchy(root, package_json_file)
     package_json = None
     
     if package_json_dir is None:
-        raise FileNotFoundError(format_error(
+        raise FileNotFoundError(kutils.format_error(
             'Could not check if npm install needed becuase "{}" could not be found.'.format(package_json_file)))
     
     with open(os.path.join(package_json_dir, package_json_file)) as package_json_data:
@@ -113,7 +110,13 @@ def dependency_needs_install(dependency_type, package_json_dir, package_json, de
 
 
 def is_dependency_installed(package_json_dir, dependency):
-    return os.path.isdir(os.path.join(package_json_dir, "node_modules", str(dependency)))
+    installed = os.path.isdir(os.path.join(package_json_dir, "node_modules", str(dependency)))
+    
+    if not installed:
+        print(kutils.format_string('Dependency not up to date: ', kutils.BOLD, kutils.MAGENTA), end="")
+        print(dependency)
+    
+    return installed
 
 
 def is_dependency_is_up_to_date(dependency_type, package_json_dir, package_json, dependency):
@@ -128,6 +131,10 @@ def is_dependency_is_up_to_date(dependency_type, package_json_dir, package_json,
         up_to_date = is_version_is_up_to_date(expected_version, actual_version)
     except FileNotFoundError as e:  # Some packages don't actually have a package.json
         up_to_date = True
+
+    if not up_to_date:
+        print(kutils.format_string('Dependency not up to date: ', kutils.BOLD, kutils.MAGENTA), end="")
+        print(dependency)
 
     return up_to_date
 
@@ -181,7 +188,7 @@ def start_processes(opts):
     process_count = 0
     
     for root in opts.roots:
-        print_formatted("Starting Processes: {}".format(root), BOLD, CYAN)
+        kutils.print_formatted("Starting Processes: {}".format(root), kutils.BOLD, kutils.CYAN)
         
         if not opts.no_gulp:
             start_gulp_process(opts, root)
@@ -192,13 +199,13 @@ def start_processes(opts):
             process_count += 1
         
         if process_count == 0:
-            print_formatted("None", BOLD, RED)
+            kutils.print_formatted("None", kutils.BOLD, kutils.RED)
 
 
 def start_gulp_process(opts, cwd):
     global popens
     
-    print_formatted("gulp watch", BOLD)
+    kutils.print_formatted("gulp watch", kutils.BOLD)
     
     if not opts.dry_run:
         popens.append(Popen(["gulp", "watch"], cwd=cwd))
@@ -207,13 +214,13 @@ def start_gulp_process(opts, cwd):
 def start_karma_process(opts, cwd):
     global popens
     karma_conf = "karma.conf.js"
-    karma_conf_dir = find_file_up_hierarchy(cwd, karma_conf)
+    karma_conf_dir = kutils.find_file_up_hierarchy(cwd, karma_conf)
 
     if karma_conf_dir is None:
-        raise FileNotFoundError(format_error(
+        raise FileNotFoundError(kutils.format_error(
             'Could not start karma because "{}" could not be found.'.format(karma_conf)))
     
-    print_formatted("karma start", BOLD)
+    kutils.print_formatted("karma start", kutils.BOLD)
     
     if not opts.dry_run:
         popens.append(Popen(["karma", "start"], cwd=karma_conf_dir))
@@ -233,41 +240,11 @@ def terminate_process(popen):
     terminated = False
     
     if popen is not None and popen.poll() is None:
-        print_formatted("Killing process: {}".format(" ".join(popen.args)), RED)
+        kutils.print_formatted("Killing process: {}".format(" ".join(popen.args)), kutils.RED)
         popen.terminate()
         terminated = True
     
     return terminated
-
-
-# ################# #
-# Utility Functions #
-# ################# #
-
-
-def find_file_up_hierarchy(root, file):
-    next_path = root
-    path = None
-    found = False
-    
-    while not found and path != next_path:
-        path = next_path
-        found = file in os.listdir(path)
-        next_path = os.path.dirname(path)
-    
-    return path if found else None
-
-
-def format_error(text):
-    return format_string(text, BOLD, RED)
-
-
-def format_string(text, *formats):
-    return ''.join(formats) + text + PLAIN
-
-
-def print_formatted(text, *formats):
-    print(format_string(text, *formats))
 
 
 if __name__ == "__main__":
