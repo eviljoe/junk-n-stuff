@@ -85,10 +85,12 @@ alias ltr="ls -ltr"
 alias ltar="ls -ltar"
 
 # Misc.
+alias apmu="apm update --no-confirm"
 alias cls="tput reset"
 alias df="df -h"
 alias du="du -h"
 alias emacs="emacs -nw"
+alias less="less -iRP '?f%f:<stdin>.?m (%i of %m)., %lb of %L (%Pb\\%)'"
 alias path='printf "%s\n" "${PATH}"'
 alias pwdp='pwd -P'
 alias resource="source ~/.bashrc"

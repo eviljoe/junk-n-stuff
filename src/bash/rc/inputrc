@@ -1,0 +1,34 @@
+# ############## #
+# Misc. Settings #
+# ############## #
+
+set completion-ignore-case on
+
+# ############ #
+# Key Bindings #
+# ############ #
+
+# For a full list of bindings execute `bind -p'
+#
+# To find out how to describe a key stroke, press CTRL+V then the keystroke.
+# For example:
+#   CTRL+V, ALT+LEFT    : ^[[1;5D
+#   CTRL+V, CTRL+DELETE : ^[[3;5~
+
+# CTRL+RIGHT to move forward one word
+"\e[1;5C": forward-word
+
+# CTRL+LEFT to move backward one word
+"\e[1;5D": backward-word
+
+# CTRL+SHIFT+DELETE to delete from cursor to end of word
+"\e[3;5~": kill-word
+
+# CTRL+SHIFT+DELETE to delete from cursor to end of line
+"\e[3;6~": kill-line
+
+# CTRL+BACKSPACE to delete from cursor to beginning of word
+"\037": backward-kill-word
+
+# CTRL+SHIFT+BACKSPACE to delete from cursor to beginning of line
+"\302\237": backward-kill-line
