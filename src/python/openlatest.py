@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
 
+
 import argparse
 import os
 import os.path
 import platform
 import subprocess
+import sys
 
 
 def main():
     opts = parse_args()
     validate_opts(opts)
-    print('directories: {}'.format(opts.directories))  # JOE o
     latest = get_latest_file(opts.directories, opts.include_hidden)
-    print('latest: {}'.format(latest))  # JOE o
     
-    if latest is not None:
+    if latest is None:
+        print('No latest file.', file=sys.stderr)
+    else:
         open_file(latest)
     
-    # JOE todo open the latested file
-
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Opens the most recently modified file in a directory.')
@@ -43,7 +43,7 @@ def validate_opts(opts):
 
 
 def get_latest_file(directories, include_hidden):
-    return max(get_files_in_directories(directories, include_hidden), key=os.path.getmtime)
+    return max(get_files_in_directories(directories, include_hidden), key=os.path.getmtime, default=None)
 
 
 def get_files_in_directories(directories, include_hidden):
@@ -62,17 +62,17 @@ def should_check_file(file_name, include_hidden):
 
 
 def open_file(file_name):
-    sys = platform.system()
-    sysl = sys.lower()
+    system = platform.system()
+    systeml = system.lower()
     
-    if sysl.startswith('linux'):
+    if systeml.startswith('linux'):
         open_file_subprocess('xdg-open', file_name)
-    elif sysl.startswith('darwin'):
+    elif systeml.startswith('darwin'):
         open_file_subprocess('open', file_name)
-    elif sysl.startswith('windows'):
+    elif systeml.startswith('windows'):
         open_file_windows(file_name)
     else:
-        raise UnsupportedOSError('Could not determine how to open a file for unsupported OS: {}'.format(sys))
+        raise UnsupportedOSError('Could not determine how to open a file for unsupported OS: {}'.format(system))
 
     
 def open_file_windows(file_name):
