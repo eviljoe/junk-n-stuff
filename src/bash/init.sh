@@ -164,8 +164,9 @@ function make_symbolic_links() {
     make_symbolic_link "${jns_src_dir}/bash/strlen.sh" "${HOME_BIN_DIR}/strlen"
     
     # Python
-    make_symbolic_link "${jns_src_dir}/python/kalp/kalp.py" "${HOME_BIN_DIR}/kalp"
     make_symbolic_link "${jns_src_dir}/python/alpha.py" "${HOME_BIN_DIR}/alpha"
+    make_symbolic_link "${jns_src_dir}/python/kalp/kalp.py" "${HOME_BIN_DIR}/kalp"
+    make_symbolic_link "${jns_src_dir}/python/openlatest.py" "${HOME_BIN_DIR}/openlatest"
 }
 
 function make_os_symbolic_links() {
