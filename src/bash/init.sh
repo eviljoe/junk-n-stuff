@@ -101,7 +101,7 @@ function exec_cmd() {
     printf "%s\n" "${cmd}"
     
     if [[ "${opt_dry_run}" == 0 ]]; then
-        exec ${cmd}
+        ${cmd}
     fi
 }
 
@@ -140,7 +140,7 @@ function make_bashrc() {
         printf "creating %s\n" "${bashrc_file}"
         
         if [[ "${opt_dry_run}" == 0 ]]; then
-            cat <<EOF
+            cat > "${HOME}/.bashrc" <<EOF
 #!/bin/bash
 
 source ~/.bashrc-common
@@ -153,7 +153,6 @@ function make_symbolic_links() {
     local jns_src_dir; jns_src_dir="${opt_git_home}/junk-n-stuff/src"
     
     make_os_symbolic_links
-    
     # RC
     make_symbolic_link "${jns_src_dir}/bash/rc/bashrc.sh" "${HOME}/.bashrc-common"
     make_symbolic_link "${jns_src_dir}/bash/rc/inputrc" "${HOME}/.inputrc"
