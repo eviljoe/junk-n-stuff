@@ -32,6 +32,11 @@ function print_last_exit_code {
     fi
 }
 
+function can_ls_group_dirs_first {
+    ls --group-directories-first &>/dev/null
+    return $?
+}
+
 function cdh {
     local dir; dir="$1"
     cd "${HOME}/${dir}" || return 1
@@ -79,7 +84,12 @@ alias desktop="cd ~/Desktop"
 alias docs="cd ~/Documents"
 
 # ls
-alias ll="ls -l --color=auto --group-directories-first"
+if can_ls_group_dirs_first; then
+    alias ls="ls -hp --color=auto --group-directories-first"
+else
+    alias ls="ls -hp --color=auto"
+fi
+alias ll="ls -l"
 alias lla="ls -la"
 alias ltr="ls -ltr"
 alias ltar="ls -ltar"
