@@ -115,6 +115,7 @@ if [[ "${_bashrc_os}" == "cygwin" ]]; then
     alias open="cygstart"
     alias naut="explorer"
 elif [[ "${_bashrc_os}" == "darwin" ]]; then
+    alias cls="clear"
     unalias open
     alias naut="open"
 fi
