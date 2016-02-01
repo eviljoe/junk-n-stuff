@@ -67,18 +67,19 @@ def open_file(file_name):
     
     if systeml.startswith('linux'):
         open_file_subprocess('xdg-open', file_name)
+    elif systeml.startswith('cygwin'):
+        open_file_subprocess('cygstart', file_name)
     elif systeml.startswith('darwin'):
         open_file_subprocess('open', file_name)
     elif systeml.startswith('windows'):
         open_file_windows(file_name)
     else:
         raise UnsupportedOSError('Could not determine how to open a file for unsupported OS: {}'.format(system))
-
     
+
 def open_file_windows(file_name):
-    # pylint: disable=E1101
     # os.startfile(...) only exists in Windows
-    return os.startfile(file_name)
+    return os.startfile(file_name)  # pylint: disable=E1101
 
 
 def open_file_subprocess(cmd, file_name):
