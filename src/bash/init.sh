@@ -179,6 +179,7 @@ function make_os_symbolic_links() {
         make_symbolic_link "${HOME}/Desktop" "${HOME}/desktop"
     elif [[ "${oslc}" == "cygwin" ]]; then
         printf "creating OS specific symbolic links for %s\n" "${os}"
+        make_symbolic_link "/cygdrive/c/Users/${USER}/Documents" "${HOME}/Documents"
         make_symbolic_link "/cygdrive/c/Users/${USER}/Documents" "${HOME}/docs"
         make_symbolic_link "/cygdrive/c/Users/${USER}/Desktop" "${HOME}/desktop"
     else
