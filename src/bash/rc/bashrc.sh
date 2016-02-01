@@ -32,11 +32,6 @@ function print_last_exit_code {
     fi
 }
 
-function can_ls_group_dirs_first {
-    ls --group-directories-first &>/dev/null
-    return $?
-}
-
 function cdh {
     local dir; dir="$1"
     cd "${HOME}/${dir}" || return 1
@@ -57,6 +52,11 @@ function create_ps1 {
     ps1="${ps1} "                        # space ( )
     
     export PS1="${ps1}"
+}
+
+function can_ls_group_dirs_first {
+    ls --group-directories-first &>/dev/null
+    return $?
 }
 
 # ############## #
@@ -101,7 +101,17 @@ alias df="df -h"
 alias du="du -h"
 alias emacs="emacs -nw"
 alias less="less -iRP '?f%f:<stdin>.?m (%i of %m)., %lb of %L (%Pb\\%)'"
+alias naut="nemo"
 alias path='printf "%s\n" "${PATH}"'
 alias pwdp='pwd -P'
 alias resource="source ~/.bashrc"
 alias volume="pavucontrol"
+
+# OS Specific Aliases
+bashrc_os="$(uname -o | tr "[:upper:]" "[:lower:]")"
+
+if [[ "${bashrc_os}" == "cygwin" ]]; then
+    alias naut="explorer"
+elif [[ "${bashrc_os}" == "darwin" ]]; then
+    alias naut="open"
+fi
