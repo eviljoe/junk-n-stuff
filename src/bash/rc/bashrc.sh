@@ -120,6 +120,14 @@ elif [[ "${_bashrc_os}" == "darwin" ]]; then
     alias naut="open"
 fi
 
+# Terminal Emulator Specific Aliases
+
+# When the `TERM' env. var. is `xterm' we are either in Linux or in Cygwin+Mintty.  When the `TERM' env. var. is
+# `cygwin' we are in Cygwin but using a terminal emulator other thatn Mintty (e.g. ConsoleZ).
+if [[ "${TERM,,}" == "cygwin" ]]; then
+    alias cls="tput reset && echo"
+fi
+
 # ######## #
 # Clean Up #
 # ######## #
