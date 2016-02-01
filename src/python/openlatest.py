@@ -78,11 +78,13 @@ def open_file(file_name):
     
 
 def open_file_windows(file_name):
+    print('start "{}"'.format(file_name))
     # os.startfile(...) only exists in Windows
     return os.startfile(file_name)  # pylint: disable=E1101
 
 
 def open_file_subprocess(cmd, file_name):
+    print('{} "{}"'.format(cmd, file_name))
     return subprocess.Popen([cmd, file_name])
 
 
