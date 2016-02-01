@@ -54,7 +54,7 @@ function create_ps1 {
     export PS1="${ps1}"
 }
 
-function can_ls_group_dirs_first {
+function _can_ls_group_dirs_first {
     ls --group-directories-first &>/dev/null
     return $?
 }
@@ -84,7 +84,7 @@ alias desktop="cd ~/Desktop"
 alias docs="cd ~/Documents"
 
 # ls
-if can_ls_group_dirs_first; then
+if _can_ls_group_dirs_first; then
     alias ls="ls -hp --color=auto --group-directories-first"
 else
     alias ls="ls -hp --color=auto"
@@ -101,6 +101,7 @@ alias df="df -h"
 alias du="du -h"
 alias emacs="emacs -nw"
 alias less="less -iRP '?f%f:<stdin>.?m (%i of %m)., %lb of %L (%Pb\\%)'"
+alias open="xdg-start"
 alias naut="nemo"
 alias path='printf "%s\n" "${PATH}"'
 alias pwdp='pwd -P'
@@ -108,10 +109,19 @@ alias resource="source ~/.bashrc"
 alias volume="pavucontrol"
 
 # OS Specific Aliases
-bashrc_os="$(uname -o | tr "[:upper:]" "[:lower:]")"
+_bashrc_os="$(uname -o | tr "[:upper:]" "[:lower:]")"
 
-if [[ "${bashrc_os}" == "cygwin" ]]; then
+if [[ "${_bashrc_os}" == "cygwin" ]]; then
+    alias open="cygstart"
     alias naut="explorer"
-elif [[ "${bashrc_os}" == "darwin" ]]; then
+elif [[ "${_bashrc_os}" == "darwin" ]]; then
+    unalias open
     alias naut="open"
 fi
+
+# ######## #
+# Clean Up #
+# ######## #
+
+unset -f _can_ls_group_dirs_first
+unset _bashrc_os
