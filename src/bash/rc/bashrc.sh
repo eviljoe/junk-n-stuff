@@ -1,5 +1,7 @@
 #!/bin/bash
 
+_bashrc_os="$(uname -o | tr "[:upper:]" "[:lower:]")"
+
 # ######### #
 # Functions #
 # ######### #
@@ -59,6 +61,13 @@ function _can_ls_group_dirs_first {
     return $?
 }
 
+# This only works in Cygwin
+if [[ "${_bashrc_os}" == "cygwin" ]]; then
+    function which {
+        (alias; declare -f) | /usr/bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot "$@"
+    }
+fi
+
 # ############## #
 # Env. Variables #
 # ############## #
@@ -109,8 +118,6 @@ alias resource="source ~/.bashrc"
 alias volume="pavucontrol"
 
 # OS Specific Aliases
-_bashrc_os="$(uname -o | tr "[:upper:]" "[:lower:]")"
-
 if [[ "${_bashrc_os}" == "cygwin" ]]; then
     alias open="cygstart"
     alias naut="explorer"
