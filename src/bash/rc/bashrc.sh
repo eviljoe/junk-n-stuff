@@ -88,6 +88,7 @@ alias cd.="cd ."
 alias cd..="cd .."
 alias cd...="cd ../.."
 alias cd....="cd ../../.."
+alias cd-="cd -"
 alias cdp='cd $(pwd -P)'
 alias desktop="cd ~/Desktop"
 alias docs="cd ~/Documents"
