@@ -154,19 +154,19 @@ function make_symbolic_links() {
     
     make_os_symbolic_links
     # RC
-    make_symbolic_link "${jns_src_dir}/bash/rc/bashrc.sh" "${HOME}/.bashrc-common"
-    make_symbolic_link "${jns_src_dir}/bash/rc/inputrc" "${HOME}/.inputrc"
+    make_symbolic_link "${jns_src_dir}/rc/bashrc.sh" "${HOME}/.bashrc-common"
+    make_symbolic_link "${jns_src_dir}/rc/inputrc" "${HOME}/.inputrc"
     
     # Bash
-    make_symbolic_link "${jns_src_dir}/bash/fnd.sh" "${HOME_BIN_DIR}/fnd"
-    make_symbolic_link "${jns_src_dir}/bash/lesspipe.sh" "${HOME_BIN_DIR}/lesspipe"
-    make_symbolic_link "${jns_src_dir}/bash/murmur-start.sh" "${HOME_BIN_DIR}/murmur-start"
-    make_symbolic_link "${jns_src_dir}/bash/strlen.sh" "${HOME_BIN_DIR}/strlen"
+    make_symbolic_link "${jns_src_dir}/fnd.sh" "${HOME_BIN_DIR}/fnd"
+    make_symbolic_link "${jns_src_dir}/lesspipe.sh" "${HOME_BIN_DIR}/lesspipe"
+    make_symbolic_link "${jns_src_dir}/murmur-start.sh" "${HOME_BIN_DIR}/murmur-start"
+    make_symbolic_link "${jns_src_dir}/strlen.sh" "${HOME_BIN_DIR}/strlen"
     
     # Python
-    make_symbolic_link "${jns_src_dir}/python/alpha.py" "${HOME_BIN_DIR}/alpha"
-    make_symbolic_link "${jns_src_dir}/python/kalp/kalp.py" "${HOME_BIN_DIR}/kalp"
-    make_symbolic_link "${jns_src_dir}/python/openlatest.py" "${HOME_BIN_DIR}/openlatest"
+    make_symbolic_link "${jns_src_dir}/alpha.py" "${HOME_BIN_DIR}/alpha"
+    make_symbolic_link "${jns_src_dir}/kalp/kalp.py" "${HOME_BIN_DIR}/kalp"
+    make_symbolic_link "${jns_src_dir}/openlatest.py" "${HOME_BIN_DIR}/openlatest"
 }
 
 function make_os_symbolic_links() {
