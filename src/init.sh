@@ -192,10 +192,21 @@ function make_os_symbolic_links {
         make_symbolic_link "${opt_user_home}/Documents" "${opt_user_home}/docs"
         make_symbolic_link "${opt_user_home}/Desktop" "${opt_user_home}/desktop"
     elif [[ "${oslc}" == "cygwin" ]]; then
+        local winhome
+        
+        # The `cygpath' command only exists in Cygwin, and the `USERPROFILE' env. var. only exists in Windows
+        # environments.  This check is to make sure the script does not error out when manually specifying the OS to be
+        # Cygwin.
+        if which cygpath &>/dev/null && [[ -v HOME ]]; then
+            winhome="$(cygpath "${USERPROFILE}")"
+        else
+            winhome="/cygdrive/c/Users/${USER}"
+        fi
+        
         printf "creating OS specific symbolic links for %s\n" "${opt_os}"
-        make_symbolic_link "/cygdrive/c/Users/${USER}/Documents" "${opt_user_home}/Documents"
-        make_symbolic_link "/cygdrive/c/Users/${USER}/Documents" "${opt_user_home}/docs"
-        make_symbolic_link "/cygdrive/c/Users/${USER}/Desktop" "${opt_user_home}/desktop"
+        make_symbolic_link "${winhome}/Documents" "${opt_user_home}/Documents"
+        make_symbolic_link "${winhome}/Documents" "${opt_user_home}/docs"
+        make_symbolic_link "${winhome}/Desktop" "${opt_user_home}/desktop"
     else
         printf "cannot create OS specific symbolic links unknown OS, %s\n" "${opt_os}"
     fi
