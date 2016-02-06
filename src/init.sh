@@ -204,6 +204,7 @@ function make_os_symbolic_links {
         fi
         
         printf "creating OS specific symbolic links for %s\n" "${opt_os}"
+        make_symbolic_link "${winhome}" "${opt_user_home}/winhome"
         make_symbolic_link "${winhome}/Documents" "${opt_user_home}/Documents"
         make_symbolic_link "${winhome}/Documents" "${opt_user_home}/docs"
         make_symbolic_link "${winhome}/Desktop" "${opt_user_home}/desktop"
