@@ -4,7 +4,6 @@ set -e # fail on any errors
 
 readonly DEF_GIT_HOME="${HOME}/Documents/git"
 readonly CLONE_REPO_URL="https://github.com/eviljoe/junk-n-stuff.git"
-readonly HOME_BIN_DIR="${HOME}/bin"
 
 readonly ERR_INVALID_OPT=3
 readonly ERR_OPT_REQUIRES_ARG=4
@@ -14,6 +13,7 @@ opt_clone_repo=0
 opt_print_help=0
 opt_dry_run=0
 opt_git_home="${DEF_GIT_HOME}"
+opt_user_home="${HOME}"
 
 function main() {
     local err; err=0
@@ -39,14 +39,14 @@ function main() {
 function parse_opts() {
     local err; err=0
     
-    while getopts ":cdhg:" opt; do
+    while getopts ":cdg:hu:" opt; do
         case $opt in
             c) opt_clone_repo=1 ;;
             d) opt_dry_run=1 ;;
-            h) opt_print_help=1 ;;
             g) opt_git_home="${OPTARG}" ;;
+            h) opt_print_help=1 ;;
+            u) opt_user_home="${OPTARG}" ;;
             \?)
-                
                 printf "Invalid option: -%s\n" "${OPTARG}" 1>&2
                 err=${ERR_INVALID_OPT}
                 ;;
@@ -67,7 +67,7 @@ function parse_opts() {
 function print_help() {
     local base_name; base_name="$(basename "$0")"
     
-    cat <<EOF
+    fold -w "$(tput cols)" <<EOF
 ${base_name}: A script to init junk-n-stuff
 Version: ${VERSION}
 
@@ -77,6 +77,7 @@ Options:
   -d: Do a dry run.  Do not actually perform any actions.
   -g: Git home directory. (default: ${DEF_GIT_HOME})
   -h: Print this help message and exit
+  -u: User home directory.  (default: ${HOME})
 
 Examples:
   To init junk-n-stuff: ${base_name}
@@ -124,15 +125,17 @@ function clone_repo() {
 }
 
 function make_home_bin_dir() {
-    if [[ -e "${HOME_BIN_DIR}" ]]; then
-        printf "mkdir %s (directory already exists)\n" "${HOME_BIN_DIR}"
+    local home_bin_dir; home_bin_dir="${opt_user_home}/bin"
+    
+    if [[ -e "${home_bin_dir}" ]]; then
+        printf "mkdir %s (directory already exists)\n" "${home_bin_dir}"
     else
-        exec_cmd mkdir "${HOME_BIN_DIR}"
+        exec_cmd mkdir "${home_bin_dir}"
     fi
 }
 
 function make_bashrc() {
-    local bashrc_file; bashrc_file="${HOME}/.bashrc"
+    local bashrc_file; bashrc_file="${opt_user_home}/.bashrc"
     
     if [[ -e "${bashrc_file}" ]]; then
         printf "%s (file already exists)\n" "${bashrc_file}"
@@ -140,7 +143,7 @@ function make_bashrc() {
         printf "creating %s\n" "${bashrc_file}"
         
         if [[ "${opt_dry_run}" == 0 ]]; then
-            cat > "${HOME}/.bashrc" <<EOF
+            cat > "${opt_user_home}/.bashrc" <<EOF
 #!/bin/bash
 
 source ~/.bashrc-common
@@ -151,22 +154,23 @@ EOF
 
 function make_symbolic_links() {
     local jns_src_dir; jns_src_dir="${opt_git_home}/junk-n-stuff/src"
+    local home_bin_dir; home_bin_dir="${opt_user_home}/bin"
     
     make_os_symbolic_links
     # RC
-    make_symbolic_link "${jns_src_dir}/rc/bashrc.sh" "${HOME}/.bashrc-common"
-    make_symbolic_link "${jns_src_dir}/rc/inputrc" "${HOME}/.inputrc"
+    make_symbolic_link "${jns_src_dir}/rc/bashrc.sh" "${opt_user_home}/.bashrc-common"
+    make_symbolic_link "${jns_src_dir}/rc/inputrc" "${opt_user_home}/.inputrc"
     
     # Bash
-    make_symbolic_link "${jns_src_dir}/fnd.sh" "${HOME_BIN_DIR}/fnd"
-    make_symbolic_link "${jns_src_dir}/lesspipe.sh" "${HOME_BIN_DIR}/lesspipe"
-    make_symbolic_link "${jns_src_dir}/murmur-start.sh" "${HOME_BIN_DIR}/murmur-start"
-    make_symbolic_link "${jns_src_dir}/strlen.sh" "${HOME_BIN_DIR}/strlen"
+    make_symbolic_link "${jns_src_dir}/fnd.sh" "${home_bin_dir}/fnd"
+    make_symbolic_link "${jns_src_dir}/lesspipe.sh" "${home_bin_dir}/lesspipe"
+    make_symbolic_link "${jns_src_dir}/murmur-start.sh" "${home_bin_dir}/murmur-start"
+    make_symbolic_link "${jns_src_dir}/strlen.sh" "${home_bin_dir}/strlen"
     
     # Python
-    make_symbolic_link "${jns_src_dir}/alpha.py" "${HOME_BIN_DIR}/alpha"
-    make_symbolic_link "${jns_src_dir}/kalp/kalp.py" "${HOME_BIN_DIR}/kalp"
-    make_symbolic_link "${jns_src_dir}/openlatest.py" "${HOME_BIN_DIR}/openlatest"
+    make_symbolic_link "${jns_src_dir}/alpha.py" "${home_bin_dir}/alpha"
+    make_symbolic_link "${jns_src_dir}/kalp/kalp.py" "${home_bin_dir}/kalp"
+    make_symbolic_link "${jns_src_dir}/openlatest.py" "${home_bin_dir}/openlatest"
 }
 
 function make_os_symbolic_links() {
@@ -175,13 +179,13 @@ function make_os_symbolic_links() {
     
     if [[ "${oslc}" == "gnu/linux" || "${oslc}" == "linux" ]]; then
         printf "creating OS specific symbolic links for %s\n" "${os}"
-        make_symbolic_link "${HOME}/Documents" "${HOME}/docs"
-        make_symbolic_link "${HOME}/Desktop" "${HOME}/desktop"
+        make_symbolic_link "${opt_user_home}/Documents" "${opt_user_home}/docs"
+        make_symbolic_link "${opt_user_home}/Desktop" "${opt_user_home}/desktop"
     elif [[ "${oslc}" == "cygwin" ]]; then
         printf "creating OS specific symbolic links for %s\n" "${os}"
-        make_symbolic_link "/cygdrive/c/Users/${USER}/Documents" "${HOME}/Documents"
-        make_symbolic_link "/cygdrive/c/Users/${USER}/Documents" "${HOME}/docs"
-        make_symbolic_link "/cygdrive/c/Users/${USER}/Desktop" "${HOME}/desktop"
+        make_symbolic_link "/cygdrive/c/Users/${USER}/Documents" "${opt_user_home}/Documents"
+        make_symbolic_link "/cygdrive/c/Users/${USER}/Documents" "${opt_user_home}/docs"
+        make_symbolic_link "/cygdrive/c/Users/${USER}/Desktop" "${opt_user_home}/desktop"
     else
         printf "cannot create OS specific symbolic links unknown OS, %s\n" "${os}"
     fi
