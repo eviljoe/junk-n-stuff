@@ -174,6 +174,7 @@ function make_symbolic_links {
     
     # Bash
     make_symbolic_link "${jns_src_dir}/fnd.sh" "${home_bin_dir}/fnd"
+    make_symbolic_link "${jns_src_dir}/init-jns.sh" "${home_bin_dir}/init-jns"
     make_symbolic_link "${jns_src_dir}/lesspipe.sh" "${home_bin_dir}/lesspipe"
     make_symbolic_link "${jns_src_dir}/murmur-start.sh" "${home_bin_dir}/murmur-start"
     make_symbolic_link "${jns_src_dir}/strlen.sh" "${home_bin_dir}/strlen"
