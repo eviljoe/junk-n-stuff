@@ -36,3 +36,8 @@ def format_string(text, *formats):
 
 def print_formatted(text, *formats):
     print(format_string(text, *formats))
+
+
+def print_titled(title, title_format, text, text_format):
+    print(format_string(title, *title_format), end='')
+    print(format_string(text, *text_format))
