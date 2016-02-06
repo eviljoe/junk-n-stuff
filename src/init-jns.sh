@@ -2,6 +2,7 @@
 
 set -e # fail on any errors
 
+readonly VERSION="1.1.0"
 readonly DEF_GIT_HOME="${HOME}/Documents/git"
 readonly DEF_OS="$(uname -o)"
 readonly CLONE_REPO_URL="https://github.com/eviljoe/junk-n-stuff.git"
@@ -17,6 +18,7 @@ opt_dry_run=0
 opt_git_home="${DEF_GIT_HOME}"
 opt_user_home="${HOME}"
 opt_os="${DEF_OS}"
+opt_override_symlinks=0
 
 function main {
     local err; err=0
@@ -42,13 +44,14 @@ function main {
 function parse_opts {
     local err; err=0
     
-    while getopts ":cdg:ho:u:" opt; do
+    while getopts ":cdg:ho:su:" opt; do
         case $opt in
             c) opt_clone_repo=1 ;;
             d) opt_dry_run=1 ;;
             g) opt_git_home="${OPTARG}" ;;
             h) opt_print_help=1 ;;
             o) opt_os="${OPTARG}" ;;
+            s) opt_override_symlinks=1 ;;
             u) opt_user_home="${OPTARG}" ;;
             \?)
                 printf "Invalid option: -%s\n" "${OPTARG}" 1>&2
@@ -82,16 +85,24 @@ Version: ${VERSION}
 
 Usage: ${base_name} [options]
 Options:
-  -c: Clone repo junk-n-stuff repo
-  -d: Do a dry run.  Do not actually perform any actions.
+  -c: Clone repo junk-n-stuff repo. (default: no)
+  -d: Do a dry run.  Do not actually perform any actions. (default: no)
   -g: Git home directory.  (default: ${DEF_GIT_HOME})
   -h: Print this help message and exit
-  -o: Operating system.  Can only be used during dry runs.  (default: ${DEF_OS})
-  -u: User home directory.  (default: ${HOME})
+  -o <OS>: Operating system.  Can only be used during dry runs.  (default: ${DEF_OS})
+  -s: Overwrite existing symbolic links. (default: no)
+  -u <DIR>: User home directory.  (default: ${HOME})
 
 Examples:
-  To init junk-n-stuff: ${base_name}
-  To perform a dry run: ${base_name} -d
+  * To init junk-n-stuff: ${base_name}
+  * To perform a dry run: ${base_name} -d
+
+Notes:
+  * The following key can be used to determine what action was taken for each item:
+      + Newly Added
+      > Informational Message
+      E Already Exists
+      R Replaced
 EOF
 }
 
@@ -138,8 +149,9 @@ function make_home_bin_dir {
     local home_bin_dir; home_bin_dir="${opt_user_home}/bin"
     
     if [[ -e "${home_bin_dir}" ]]; then
-        printf "mkdir %s (directory already exists)\n" "${home_bin_dir}"
+        printf "E mkdir %s\n" "${home_bin_dir}"
     else
+        printf "+ "
         exec_cmd mkdir "${home_bin_dir}"
     fi
 }
@@ -148,9 +160,9 @@ function make_bashrc {
     local bashrc_file; bashrc_file="${opt_user_home}/.bashrc"
     
     if [[ -e "${bashrc_file}" ]]; then
-        printf "%s (file already exists)\n" "${bashrc_file}"
+        printf "E %s\n" "${bashrc_file}"
     else
-        printf "creating %s\n" "${bashrc_file}"
+        printf "+ %s\n" "${bashrc_file}"
         
         if [[ "${opt_dry_run}" == 0 ]]; then
             cat > "${opt_user_home}/.bashrc" <<EOF
@@ -169,31 +181,33 @@ function make_symbolic_links {
     make_os_symbolic_links
     
     # RC
+    printf "> creating RC symbolic links\n"
     make_symbolic_link "${jns_src_dir}/rc/bashrc.sh" "${opt_user_home}/.bashrc-common"
     make_symbolic_link "${jns_src_dir}/rc/inputrc" "${opt_user_home}/.inputrc"
     
     # Bash
+    printf "> creating executable symbolic links\n"
+    make_symbolic_link "${jns_src_dir}/alpha.py" "${home_bin_dir}/alpha"
     make_symbolic_link "${jns_src_dir}/fnd.sh" "${home_bin_dir}/fnd"
     make_symbolic_link "${jns_src_dir}/init-jns.sh" "${home_bin_dir}/init-jns"
+    make_symbolic_link "${jns_src_dir}/kalp/kalp.py" "${home_bin_dir}/kalp"
     make_symbolic_link "${jns_src_dir}/lesspipe.sh" "${home_bin_dir}/lesspipe"
     make_symbolic_link "${jns_src_dir}/murmur-start.sh" "${home_bin_dir}/murmur-start"
-    make_symbolic_link "${jns_src_dir}/strlen.sh" "${home_bin_dir}/strlen"
-    
-    # Python
-    make_symbolic_link "${jns_src_dir}/alpha.py" "${home_bin_dir}/alpha"
-    make_symbolic_link "${jns_src_dir}/kalp/kalp.py" "${home_bin_dir}/kalp"
     make_symbolic_link "${jns_src_dir}/openlatest.py" "${home_bin_dir}/openlatest"
+    make_symbolic_link "${jns_src_dir}/strlen.sh" "${home_bin_dir}/strlen"
 }
 
 function make_os_symbolic_links {
     local oslc; oslc="${opt_os,,}"
     
     if [[ "${oslc}" == "gnu/linux" || "${oslc}" == "linux" ]]; then
-        printf "creating OS specific symbolic links for %s\n" "${opt_os}"
+        printf "> creating OS specific symbolic links for %s\n" "${opt_os}"
         make_symbolic_link "${opt_user_home}/Documents" "${opt_user_home}/docs"
         make_symbolic_link "${opt_user_home}/Desktop" "${opt_user_home}/desktop"
     elif [[ "${oslc}" == "cygwin" ]]; then
         local winhome
+        
+        printf "> creating OS specific symbolic links for %s\n" "${opt_os}"
         
         # The `cygpath' command only exists in Cygwin, and the `USERPROFILE' env. var. only exists in Windows
         # environments.  This check is to make sure the script does not error out when manually specifying the OS to be
@@ -204,13 +218,12 @@ function make_os_symbolic_links {
             winhome="/cygdrive/c/Users/${USER}"
         fi
         
-        printf "creating OS specific symbolic links for %s\n" "${opt_os}"
         make_symbolic_link "${winhome}" "${opt_user_home}/winhome"
         make_symbolic_link "${winhome}/Documents" "${opt_user_home}/Documents"
         make_symbolic_link "${winhome}/Documents" "${opt_user_home}/docs"
         make_symbolic_link "${winhome}/Desktop" "${opt_user_home}/desktop"
     else
-        printf "cannot create OS specific symbolic links unknown OS, %s\n" "${opt_os}"
+        printf "> cannot create OS specific symbolic links unknown OS, %s\n" "${opt_os}"
     fi
 }
 
@@ -218,9 +231,19 @@ function make_symbolic_link {
     local src; src="$1"
     local dest; dest="$2"
     
-    if [[ -e "${dest}" ]]; then
-        printf "(link already exists) ln -s \"%s\" \"%s\"\n" "${src}" "${dest}"
+    # If a symlink / file already exists, check to see if it should be replaced
+    if [[ -e "${dest}" || -L "${dest}" ]]; then
+        # If overriding existing symlinks, make sure the symlink to replace is actually a symlink.  If it is not a
+        # symlink, it should not be replaced.
+        if [[ "${opt_override_symlinks}" == "1" && -L "${dest}" ]]; then
+            rm "${dest}"
+            printf "R "
+            exec_cmd ln -s "${src}" "${dest}"
+        else
+            printf "E ln -s \"%s\" \"%s\"\n" "${src}" "${dest}"
+        fi
     else
+        printf "+ "
         exec_cmd ln -s "${src}" "${dest}"
     fi
 }
