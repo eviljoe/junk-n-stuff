@@ -11,8 +11,10 @@ import kutils
 import kwatchdog
 
 
-VERSION = '1.1.1'
-WATCHDOGS = []
+VERSION = '1.2.0'
+
+watchdogs = []  # pylint: disable=C0103
+watchdogs_terminated = False  # pylint: disable=C0103
 
 
 def main():
@@ -31,7 +33,7 @@ def main():
 
 
 def parse_args():
-    desc = "A utility to help manage `gulp watch' and `karma' in development enviornments\nVersion: {}".format(VERSION)
+    desc = "A utility to help manage `gulp' and `karma' in development enviornments\nVersion: {}".format(VERSION)
     parser = argparse.ArgumentParser(description=desc)
         
     parser.add_argument('--dry-run', action='store_true', default=False, dest='dry_run',
@@ -138,17 +140,22 @@ def start_karma_process(opts, cwd):
 def start_watchdog(opts, cmd, cwd):
     watchdog = kwatchdog.KWatchdogThread(cmd=cmd, cwd=cwd, keep_alive=not opts.no_restart, dry_run=opts.dry_run)
     watchdog.start()
-    WATCHDOGS.append(watchdog)
+    watchdogs.append(watchdog)
 
 
 def wait_on_watchdogs():
-    for watchdog in WATCHDOGS:
-        watchdog.join()
+    for watchdog in watchdogs:
+        while not watchdogs_terminated:
+            watchdog.join(timeout=1000)
 
 
 def terminate_watchdogs():
-    for watchdog in WATCHDOGS:
+    global watchdogs_terminated  # pylint: disable=W0603
+    
+    for watchdog in watchdogs:
         terminate_watchdog(watchdog)
+    
+    watchdogs_terminated = True
 
 
 def terminate_watchdog(watchdog):
