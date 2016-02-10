@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-
 import argparse
 import os
 import os.path
 import platform
+import shlex
 import subprocess
 import sys
 
@@ -78,14 +78,18 @@ def open_file(file_name):
     
 
 def open_file_windows(file_name):
-    print('start "{}"'.format(file_name))
+    print(get_shell_command(['start', file_name]))
     # os.startfile(...) only exists in Windows
     return os.startfile(file_name)  # pylint: disable=E1101
 
 
 def open_file_subprocess(cmd, file_name):
-    print('{} "{}"'.format(cmd, file_name))
+    print(get_shell_command([cmd, file_name]))
     return subprocess.Popen([cmd, file_name])
+
+
+def get_shell_command(parts):
+    return '' if parts is None else ' '.join([shlex.quote(part) for part in parts])
 
 
 class UnsupportedOSError(Exception):

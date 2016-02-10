@@ -1,3 +1,4 @@
+import shlex
 import subprocess
 import threading
 
@@ -12,20 +13,20 @@ class KWatchdogThread(threading.Thread):
         self.keep_alive = keep_alive
         self.dry_run = dry_run
         self.popen = None
-        self.name = 'watchdog - {}'.format(' '.join(cmd))
+        self.shcmd = self._get_shell_command(cmd)
+        self.name = 'watchdog - {}'.format(self.shcmd)
     
     def run(self):
         self._watch_subprocess()
 
     def _watch_subprocess(self):
-        kutils.print_titled('starting subprocess: ', [kutils.BOLD, kutils.MAGENTA], ' '.join(self.cmd), [])
+        kutils.print_titled('starting subprocess: ', [kutils.BOLD, kutils.MAGENTA], self.shcmd, [])
         
         if not self.dry_run:
             self._start_and_wait_on_subprocess()
             
             while self.keep_alive:
-                kutils.print_formatted(
-                    'restarting subprocess: {}'.format(' '.join(self.cmd)), kutils.BOLD, kutils.RED_BG)
+                kutils.print_formatted('restarting subprocess: {}'.format(self.shcmd), kutils.BOLD, kutils.RED_BG)
                 self._start_and_wait_on_subprocess()
 
     def _start_and_wait_on_subprocess(self):
@@ -42,6 +43,9 @@ class KWatchdogThread(threading.Thread):
     def terminate(self):
         self.keep_alive = False
         self.popen.terminate()
+    
+    def _get_shell_command(self, cmd):
+        return '' if cmd is None else ' '.join([shlex.quote(part) for part in cmd])
     
 
 class WatchdogAlreadyHasSubprocessException(Exception):
