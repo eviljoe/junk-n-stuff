@@ -5,11 +5,12 @@ import kutils
 
 
 class KWatchdogThread(threading.Thread):
-    def __init__(self, cmd, cwd, keep_alive):
+    def __init__(self, cmd, cwd, keep_alive, dry_run):
         threading.Thread.__init__(self)
         self.cmd = cmd
         self.cwd = cwd
         self.keep_alive = keep_alive
+        self.dry_run = dry_run
         self.popen = None
         self.name = 'watchdog - {}'.format(' '.join(cmd))
     
@@ -18,11 +19,14 @@ class KWatchdogThread(threading.Thread):
 
     def _watch_subprocess(self):
         kutils.print_titled('starting subprocess: ', [kutils.BOLD, kutils.MAGENTA], ' '.join(self.cmd), [])
-        self._start_and_wait_on_subprocess()
         
-        while self.keep_alive:
-            kutils.print_formatted('restarting subprocess: {}'.format(' '.join(self.cmd)), kutils.BOLD, kutils.RED_BG)
+        if not self.dry_run:
             self._start_and_wait_on_subprocess()
+            
+            while self.keep_alive:
+                kutils.print_formatted(
+                    'restarting subprocess: {}'.format(' '.join(self.cmd)), kutils.BOLD, kutils.RED_BG)
+                self._start_and_wait_on_subprocess()
 
     def _start_and_wait_on_subprocess(self):
         if self.is_subprocess_alive():

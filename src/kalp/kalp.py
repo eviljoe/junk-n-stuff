@@ -121,8 +121,7 @@ def start_processes_for_root(opts, root):
 
 
 def start_gulp_process(opts, cwd):
-    if not opts.dry_run:
-        start_watchdog(opts=opts, cmd=['gulp', 'watch'], cwd=cwd)
+    start_watchdog(opts=opts, cmd=['gulp', 'watch'], cwd=cwd)
 
 
 def start_karma_process(opts, cwd):
@@ -133,12 +132,11 @@ def start_karma_process(opts, cwd):
         raise FileNotFoundError(kutils.format_error(
             'Could not start karma because "{}" could not be found.'.format(karma_conf)))
     
-    if not opts.dry_run:
-        start_watchdog(opts=opts, cmd=['karma', 'start'], cwd=karma_conf_dir)
+    start_watchdog(opts=opts, cmd=['karma', 'start'], cwd=karma_conf_dir)
 
 
 def start_watchdog(opts, cmd, cwd):
-    watchdog = kwatchdog.KWatchdogThread(cmd=cmd, cwd=cwd, keep_alive=not opts.no_restart)
+    watchdog = kwatchdog.KWatchdogThread(cmd=cmd, cwd=cwd, keep_alive=not opts.no_restart, dry_run=opts.dry_run)
     watchdog.start()
     WATCHDOGS.append(watchdog)
 
