@@ -4,22 +4,25 @@ import argparse
 import atexit
 import os
 import os.path
-import subprocess
+import signal
 
 import knpm
 import kutils
+import kwatchdog
 
 
 VERSION = '1.1.1'
-POPENS = []
+WATCHDOGS = []
 
 
 def main():
-    atexit.register(terminate_processes)
+    atexit.register(terminate_watchdogs)
+    signal.signal(signal.SIGINT, lambda signum, frame: terminate_watchdogs())
+    
     opts = parse_args()
     maybe_do_npm_installs(opts)
     start_processes(opts)
-    wait_on_processes()
+    wait_on_watchdogs()
 
 
 # ################# #
@@ -37,6 +40,8 @@ def parse_args():
                         help="Do not start the `karma' subprocess (default: %(default)s)")
     parser.add_argument('-K', '--no-karma', action='store_true', default=False, dest='no_karma',
                         help="Do not start the `gulp watch' subprocess (default: %(default)s)")
+    parser.add_argument('-R', '--no-restart', action='store_true', default=False, dest='no_restart',
+                        help="Do not restart the subprocesses when they die prematurely (default: %(default)s)")
     parser.add_argument('-r', '--root', action='append', default=[], metavar='ROOT', dest='roots',
                         help='Specify a root directory (default: .)')
     
@@ -101,7 +106,7 @@ def start_processes(opts):
 def start_processes_for_root(opts, root):
     process_count = 0
     
-    kutils.print_titled('starting processes: ', [kutils.BOLD, kutils.CYAN], root, [kutils.BOLD])
+    kutils.print_titled('starting subprocesses: ', [kutils.BOLD, kutils.CYAN], root, [kutils.BOLD])
     
     if not opts.no_gulp:
         start_gulp_process(opts, root)
@@ -116,10 +121,8 @@ def start_processes_for_root(opts, root):
 
 
 def start_gulp_process(opts, cwd):
-    kutils.print_formatted('gulp watch', kutils.BOLD)
-    
     if not opts.dry_run:
-        POPENS.append(subprocess.Popen(['gulp', 'watch'], cwd=cwd))
+        start_watchdog(opts=opts, cmd=['gulp', 'watch'], cwd=cwd)
 
 
 def start_karma_process(opts, cwd):
@@ -130,28 +133,32 @@ def start_karma_process(opts, cwd):
         raise FileNotFoundError(kutils.format_error(
             'Could not start karma because "{}" could not be found.'.format(karma_conf)))
     
-    kutils.print_formatted('karma start', kutils.BOLD)
-    
     if not opts.dry_run:
-        POPENS.append(subprocess.Popen(['karma', 'start'], cwd=karma_conf_dir))
+        start_watchdog(opts=opts, cmd=['karma', 'start'], cwd=karma_conf_dir)
 
 
-def wait_on_processes():
-    for popen in POPENS:
-        popen.wait()
+def start_watchdog(opts, cmd, cwd):
+    watchdog = kwatchdog.KWatchdogThread(cmd=cmd, cwd=cwd, keep_alive=not opts.no_restart)
+    watchdog.start()
+    WATCHDOGS.append(watchdog)
 
 
-def terminate_processes():
-    for popen in POPENS:
-        terminate_process(popen)
+def wait_on_watchdogs():
+    for watchdog in WATCHDOGS:
+        watchdog.join()
 
 
-def terminate_process(popen):
+def terminate_watchdogs():
+    for watchdog in WATCHDOGS:
+        terminate_watchdog(watchdog)
+
+
+def terminate_watchdog(watchdog):
     terminated = False
     
-    if popen is not None and popen.poll() is None:
-        kutils.print_titled('killing process: ', [kutils.BOLD, kutils.RED], ' '.join(popen.args), [kutils.BOLD])
-        popen.terminate()
+    if watchdog is not None and watchdog.is_alive():
+        kutils.print_titled('killing process: ', [kutils.BOLD, kutils.RED], ' '.join(watchdog.cmd), [kutils.BOLD])
+        watchdog.terminate()
         terminated = True
     
     return terminated

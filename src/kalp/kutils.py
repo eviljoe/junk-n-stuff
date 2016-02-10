@@ -5,6 +5,7 @@ BOLD = '\033[1m'
 CYAN = '\033[36m'
 MAGENTA = '\033[35m'
 RED = '\033[31m'
+RED_BG = '\033[41m'
 PLAIN = '\033[0m'
 
 
