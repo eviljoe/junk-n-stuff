@@ -118,6 +118,7 @@ alias path='printf "%s\n" "${PATH}"'
 alias pwdp='pwd -P'
 alias resource="source ~/.bashrc"
 alias volume="pavucontrol"
+alias winch="kill -SIGWINCH \$\$"
 
 # OS Specific Aliases
 if [[ "${_bashrc_os}" == "cygwin" ]]; then
