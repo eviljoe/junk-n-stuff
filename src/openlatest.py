@@ -1,12 +1,21 @@
 #!/usr/bin/env python3
 
 import argparse
+import itertools
 import os
 import os.path
 import platform
 import shlex
 import subprocess
 import sys
+
+
+OPEN_COMMANDS = {
+    'linux': ['xdg-open'],
+    'cygwin': ['cygstart'],
+    'darwin': ['open'],
+    'windows': ['start', '/b']
+}
 
 
 def main():
@@ -17,16 +26,24 @@ def main():
     if latest is None:
         print('No latest file.', file=sys.stderr)
     else:
-        open_file(latest)
+        open_file(opts, latest)
     
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Opens the most recently modified file in a directory.')
     
-    parser.add_argument('-H', '--include-hidden', action='store_true', default=False, dest='include_hidden',
-                        help='Include hidden files when looking for the last modified one (default:  %(default)s))')
+    # positional arguments
     parser.add_argument('directories', nargs='*', metavar='directory', default=[],
                         help='Directory to look in for the most recent file (default: .)')
+
+    # optional arguments
+    parser.add_argument('--dry-run', action='store_true', default=False, dest='dry_run',
+                        help='Just output what actions will be peformed without actually performing them ' +
+                        '(default:  %(default)s)')
+    parser.add_argument('-H', '--include-hidden', action='store_true', default=False, dest='include_hidden',
+                        help='Include hidden files when looking for the last modified one (default:  %(default)s)')
+    parser.add_argument('-o', '--os', action='store', default=get_default_os(), metavar='OS', dest='os',
+                        help='Specify the operating system.  Can only be used during dry runs. (default:  %(default)s)')
     
     opts = parser.parse_args()
     opts.directories = set([os.getcwd()]) if not opts.directories else set(opts.directories)
@@ -61,31 +78,35 @@ def should_check_file(file_name, include_hidden):
     return check
 
 
-def open_file(file_name):
-    system = platform.system()
-    systeml = system.lower()
+def get_os(opts):
+    return get_default_os() if opts.os is None or len(opts.os) == 0 else opts.os
+
+
+def get_default_os():
+    return platform.system()
+
+
+def open_file(opts, file_name):
+    op_sys = get_os(opts)
+    open_cmd = get_open_command_list(op_sys)
     
-    if systeml.startswith('linux'):
-        open_file_subprocess('xdg-open', file_name)
-    elif systeml.startswith('cygwin'):
-        open_file_subprocess('cygstart', file_name)
-    elif systeml.startswith('darwin'):
-        open_file_subprocess('open', file_name)
-    elif systeml.startswith('windows'):
-        open_file_windows(file_name)
+    if open_cmd is None:
+        raise UnsupportedOSError('Could not determine how to open a file for unsupported OS: {}'.format(op_sys))
     else:
-        raise UnsupportedOSError('Could not determine how to open a file for unsupported OS: {}'.format(system))
+        start_open_file_subprocess(opts, open_cmd, file_name)
     
 
-def open_file_windows(file_name):
-    print(get_shell_command(['start', file_name]))
-    # os.startfile(...) only exists in Windows
-    return os.startfile(file_name)  # pylint: disable=E1101
+def get_open_command_list(op_sys):
+    key = next((k for k in OPEN_COMMANDS.keys() if op_sys.lower().startswith(k)), None)
+    return None if key is None else OPEN_COMMANDS[key]
 
 
-def open_file_subprocess(cmd, file_name):
-    print(get_shell_command([cmd, file_name]))
-    return subprocess.Popen([cmd, file_name])
+def start_open_file_subprocess(opts, cmd, file_name):
+    cmds = list(itertools.chain(cmd, [file_name]))
+    
+    print(get_shell_command(cmds))
+    
+    return None if opts.dry_run else subprocess.Popen(cmds)
 
 
 def get_shell_command(parts):
