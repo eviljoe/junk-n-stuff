@@ -153,7 +153,7 @@ def wait_on_watchdogs():
 
 
 def terminate_watchdogs():
-    global watchdogs_terminated  # pylint: disable=global-statement
+    global watchdogs_terminated  # pylint: disable=global-statement,invalid-name
     
     for watchdog in watchdogs:
         terminate_watchdog(watchdog)
