@@ -5,15 +5,17 @@ import threading
 import kutils
 
 
-class KWatchdogThread(threading.Thread):
-    def __init__(self, cmd, cwd, keep_alive, dry_run):
+class WatchdogThread(threading.Thread):
+    def __init__(self, cmd, cwd, keep_alive, dry_run, wait_timeout):
         threading.Thread.__init__(self)
         self.cmd = cmd
         self.cwd = cwd
         self.keep_alive = keep_alive
+        self.terminated = False
         self.dry_run = dry_run
+        self.wait_timeout = wait_timeout
         self.popen = None
-        self.shcmd = self._get_shell_command(cmd)
+        self.shcmd = _get_shell_command(cmd)
         self.name = 'watchdog - {}'.format(self.shcmd)
     
     def run(self):
@@ -32,20 +34,33 @@ class KWatchdogThread(threading.Thread):
     def _start_and_wait_on_subprocess(self):
         if self.is_subprocess_alive():
             raise WatchdogAlreadyHasSubprocessException(
-                'Watchdog "{}" already has running subprocess'.format(self.name))
+                'Watchdog "{}" already has a running subprocess'.format(self.name))
         else:
-            self.popen = subprocess.Popen(self.cmd, cwd=self.cwd)
-            self.popen.wait()
+            self._start_subprocesse()
+            self._wait_on_subprocess()
+    
+    def _start_subprocesse(self):
+        self.popen = subprocess.Popen(self.cmd, cwd=self.cwd)
+    
+    def _wait_on_subprocess(self):
+        while not self.terminated and self.is_subprocess_alive():
+            try:
+                self.popen.wait(timeout=self.wait_timeout)
+            except subprocess.TimeoutExpired:
+                pass
     
     def is_subprocess_alive(self):
         return self.popen is not None and self.popen.poll() is None
     
     def terminate(self):
-        self.keep_alive = False
-        self.popen.terminate()
-    
-    def _get_shell_command(self, cmd):
-        return '' if cmd is None else ' '.join([shlex.quote(part) for part in cmd])
+        if not self.terminated:
+            self.terminated = False
+            self.keep_alive = False
+            self.popen.terminate()
+
+
+def _get_shell_command(cmd):
+    return '' if cmd is None else ' '.join([shlex.quote(part) for part in cmd])
     
 
 class WatchdogAlreadyHasSubprocessException(Exception):

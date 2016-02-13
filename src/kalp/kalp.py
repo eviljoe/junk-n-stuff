@@ -11,10 +11,11 @@ import kutils
 import kwatchdog
 
 
-VERSION = '1.2.0'
+VERSION = '1.2.1'
+THREAD_WAIT_TIMEOUT = 1.0  # in seconds
 
-watchdogs = []  # pylint: disable=C0103
-watchdogs_terminated = False  # pylint: disable=C0103
+watchdogs = []  # pylint: disable=invalid-name
+watchdogs_terminated = False  # pylint: disable=invalid-name
 
 
 def main():
@@ -48,6 +49,7 @@ def parse_args():
                         help='Specify a root directory (default: .)')
     
     opts = parser.parse_args()
+    
     opts.roots = [os.getcwd()] if not opts.roots else opts.roots
     validate_directories(opts.roots)
     opts.roots = [os.path.abspath(p) for p in opts.roots]
@@ -138,19 +140,20 @@ def start_karma_process(opts, cwd):
 
 
 def start_watchdog(opts, cmd, cwd):
-    watchdog = kwatchdog.KWatchdogThread(cmd=cmd, cwd=cwd, keep_alive=not opts.no_restart, dry_run=opts.dry_run)
+    watchdog = kwatchdog.WatchdogThread(
+        cmd=cmd, cwd=cwd, keep_alive=not opts.no_restart, dry_run=opts.dry_run, wait_timeout=THREAD_WAIT_TIMEOUT)
     watchdog.start()
     watchdogs.append(watchdog)
 
 
 def wait_on_watchdogs():
     for watchdog in watchdogs:
-        while not watchdogs_terminated:
-            watchdog.join(timeout=1000)
+        while not watchdogs_terminated and watchdog.is_alive():
+            watchdog.join(timeout=THREAD_WAIT_TIMEOUT)
 
 
 def terminate_watchdogs():
-    global watchdogs_terminated  # pylint: disable=W0603
+    global watchdogs_terminated  # pylint: disable=global-statement
     
     for watchdog in watchdogs:
         terminate_watchdog(watchdog)
@@ -161,7 +164,7 @@ def terminate_watchdogs():
 def terminate_watchdog(watchdog):
     terminated = False
     
-    if watchdog is not None and watchdog.is_alive():
+    if watchdog.is_alive():
         kutils.print_titled('killing process: ', [kutils.BOLD, kutils.RED], ' '.join(watchdog.cmd), [kutils.BOLD])
         watchdog.terminate()
         terminated = True
