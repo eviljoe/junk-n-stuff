@@ -185,7 +185,7 @@ function make_symbolic_links {
     make_symbolic_link "${jns_src_dir}/rc/bashrc.sh" "${opt_user_home}/.bashrc-common"
     make_symbolic_link "${jns_src_dir}/rc/inputrc" "${opt_user_home}/.inputrc"
     
-    # Bash
+    # Scripts
     printf "> creating executable symbolic links\n"
     make_symbolic_link "${jns_src_dir}/alpha.py" "${home_bin_dir}/alpha"
     make_symbolic_link "${jns_src_dir}/fnd.sh" "${home_bin_dir}/fnd"
@@ -196,6 +196,7 @@ function make_symbolic_links {
     make_symbolic_link "${jns_src_dir}/openlatest.py" "${home_bin_dir}/openlatest"
     make_symbolic_link "${jns_src_dir}/psgrep.sh" "${home_bin_dir}/psgrep"
     make_symbolic_link "${jns_src_dir}/strlen.sh" "${home_bin_dir}/strlen"
+    make_symbolic_link "${jns_src_dir}/uuu.py" "${home_bin_dir}/uuu"
 }
 
 function make_os_symbolic_links {
