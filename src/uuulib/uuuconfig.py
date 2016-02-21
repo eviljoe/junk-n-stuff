@@ -3,6 +3,13 @@ import os
 import re
 
 
+CMD_ATOM = 'atom'
+CMD_GIT = 'git'
+CMD_GITD = 'gitd'
+CMD_SVN = 'svn'
+CMD_SVND = 'svnd'
+
+
 class UUUConfigFileReader:
     def __init__(self, config_file_name):
         self.config_file_name = config_file_name
@@ -50,29 +57,28 @@ class UUUConfigFileReader:
     def update_opts_for_config_command(self, opts, ccmd):
         cmdl = ccmd.cmd.lower()
         
-        if cmdl == 'atom':
+        if cmdl == CMD_ATOM:
             opts.atom = True
         elif len(cmdl) > 0:
-            if cmdl == 'git':
-                dirs = opts.git_dirs
-            elif cmdl == 'gitd':
-                dirs = opts.gitd_dirs
-            elif cmdl == 'svn':
-                dirs = opts.svn_dirs
-            elif cmdl == 'svnd':
-                dirs = opts.svnd_dirs
-            else:
+            dirs_for_cmd = {
+                CMD_GIT: opts.git_dirs,
+                CMD_GITD: opts.gitd_dirs,
+                CMD_SVN: opts.svn_dirs,
+                CMD_SVND: opts.svnd_dirs
+            }
+            
+            if cmdl not in dirs_for_cmd:
                 raise InvalidConfigError('[{}, line {}] Invalid Configuration command: {}'.format(
                     self.config_file_name, ccmd.line_num, ccmd.cmd))
             
-            self.update_opts_append_dir(dirs, ccmd)
+            self.update_opts_append_dir(dirs_for_cmd[cmdl], ccmd)
 
     def update_opts_append_dir(self, dirs, ccmd):
         if len(ccmd.arg) == 0:
             raise InvalidConfigError('[{}, line {}] Configuration command requires directory: {}'.format(
                 self.config_file_name, ccmd.line_num, ccmd.cmd))
 
-        dirs.append(ccmd.arg)
+        dirs.append(_normalize_home_dir(ccmd.arg))
 
 
 # ################# #
@@ -82,6 +88,13 @@ class UUUConfigFileReader:
 
 def _at_eol(line, index):
     return len(line) <= index or line[index] == '\n'
+
+
+def _normalize_home_dir(directory):
+    if directory == '~' or directory.startswith('~/') or directory.startswith('~\\'):
+        directory = os.path.expanduser('~') + directory[1:]
+    
+    return directory
 
 
 # ########## #
