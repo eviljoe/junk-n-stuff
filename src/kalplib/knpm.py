@@ -3,7 +3,7 @@ import os
 import re
 import subprocess
 
-import kutils
+from . import kutils
 
 
 PACK_JSON_FNAME = 'package.json'

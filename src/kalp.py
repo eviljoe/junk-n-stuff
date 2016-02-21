@@ -6,9 +6,9 @@ import os
 import os.path
 import signal
 
-import knpm
-import kutils
-import kwatchdog
+from kalplib import knpm
+from kalplib import kutils
+from kalplib import kwatchdog
 
 
 VERSION = '1.2.1'
