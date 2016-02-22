@@ -18,17 +18,6 @@ def main():
     uuupdate.update(opts)
 
 
-# In addition to the command line arguments, a configuration file can be used to specify the updates that
-# should be made.  `uuu' will look for that file here:
-#   ~/.jns/uuu
-# Each line of the file should be in the following format:
-#   <COMMAND> [ARGUMENT]
-# For example, to specify a git repository:
-#   git ~/Documents/git/junk-n-stuff
-# For fommands without an argument, just specify the command.  For example:
-#   atom
-
-
 def parse_args():
     parser = argparse.ArgumentParser(description='Update... all the things!', epilog=create_help_epilog(),
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
