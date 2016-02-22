@@ -6,7 +6,7 @@ import os.path
 import sys
 import textwrap
 
-from jnsutils import jnsvutils
+from jnsutils import jnsvalid
 from uuulib import uuuconfig
 from uuulib import uuupdate
 
@@ -72,10 +72,10 @@ def get_default_config_file_name():
 
 
 def validate_opts(opts):
-    jnsvutils.validate_is_directories(opts.git_dirs)
-    jnsvutils.validate_is_directories(opts.gitd_dirs)
-    jnsvutils.validate_is_directories(opts.svn_dirs)
-    jnsvutils.validate_is_directories(opts.svnd_dirs)
+    jnsvalid.validate_is_directories(opts.git_dirs)
+    jnsvalid.validate_is_directories(opts.gitd_dirs)
+    jnsvalid.validate_is_directories(opts.svn_dirs)
+    jnsvalid.validate_is_directories(opts.svnd_dirs)
 
 
 if __name__ == '__main__':

@@ -1,4 +1,5 @@
 import os
+import platform
 import subprocess
 
 
@@ -20,8 +21,15 @@ def update(opts):
 
 
 def update_atom(opts):
+    cmd = []
+    
+    if platform.system().lower().startswith('cygwin'):
+        cmd.extend(['cmd', '/C'])
+    
+    cmd.extend(['apm', 'update', '--no-confirm'])
+
     print('updating atom\'s packages')
-    run_cmd(opts, '.', ['apm', 'update', '--noconfirm'])
+    run_cmd(opts, '.', cmd)
 
 
 def update_svn_dir(opts, directory):
