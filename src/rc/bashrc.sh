@@ -39,12 +39,52 @@ function cdh {
     cd "${HOME}/${dir}" || return 1
 }
 
-function create_ps1 {
+# this algorithm is from here: http://unix.stackexchange.com/a/9607
+function _is_in_ssh {
+    local in_ssh; in_ssh=1
+    
+    if [ -n "${SSH_CLIENT}" ] || [ -n "${SSH_TTY}" ]; then
+        in_ssh=0
+    else
+        case $(ps -o comm= -p $PPID) in
+            sshd|*/sshd) in_ssh=0
+        esac
+    fi
+    
+    return ${in_ssh}
+}
+
+function _is_in_sudo {
+    local in_sudo; in_sudo=1
+    
+    if [ -n "${SUDO_COMMAND}" ]; then
+        in_sudo=0
+    fi
+    
+    return ${in_sudo}
+}
+
+function _create_ps1 {
     local ps1; ps1=""
     
-    ps1="${ps1}\u"                       # username
-    ps1="${ps1}@"                        # at (@)
-    ps1="${ps1}\h"                       # host up to fisrt period (.)
+    if _is_in_sudo; then
+        ps1="${ps1}\[\e[32m\]" # make username green
+        ps1="${ps1}\u"         # username
+        ps1="${ps1}\[\e[m\]"   # clear username color
+    else
+        ps1="${ps1}\u" # username
+    fi
+    
+    ps1="${ps1}@" # at (@)
+    
+    if _is_in_ssh; then
+        ps1="${ps1}\[\e[32m\]" # make host green
+        ps1="${ps1}\h"         # host up to fisrt period (.)
+        ps1="${ps1}\[\e[m\]"   # clear host color
+    else
+        ps1="${ps1}\h" # host up to fisrt period (.)
+    fi
+    
     ps1="${ps1}:"                        # colon (:)
     ps1="${ps1}\w"                       # current directory with $HOME as tilda (~)
     ps1="${ps1}\[\e[31m\]"               # make exit code red
@@ -72,7 +112,7 @@ fi
 # Env. Variables #
 # ############## #
 
-create_ps1
+_create_ps1
 
 add_path ~/bin
 add_path ~/.cabal/bin # location of `shellcheck'
@@ -143,4 +183,7 @@ fi
 # ######## #
 
 unset -f _can_ls_group_dirs_first
+unset -f _is_in_ssh
+unset -f _is_in_sudo
+unset -f _create_ps1
 unset _bashrc_os
