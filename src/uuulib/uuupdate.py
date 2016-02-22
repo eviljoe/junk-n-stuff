@@ -4,20 +4,30 @@ import subprocess
 
 
 def update(opts):
+    attempted_updates = False
+    
     for directory in opts.gitd_dirs:
         update_git_dir(opts, directory)
+        attempted_updates = True
     
     for directory in opts.git_dirs:
         update_git(opts, directory)
+        attempted_updates = True
     
     for directory in opts.svnd_dirs:
         update_svn_dir(opts, directory)
+        attempted_updates = True
     
     for directory in opts.svn_dirs:
         update_svn(opts, directory)
+        attempted_updates = True
     
     if opts.atom:
         update_atom(opts)
+        attempted_updates = True
+    
+    if not attempted_updates:
+        print('no updates specified')
 
 
 def update_atom(opts):
