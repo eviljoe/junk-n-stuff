@@ -39,6 +39,10 @@ function cdh {
     cd "${HOME}/${dir}" || return 1
 }
 
+function str_lower {
+    printf "%s" "$1" | tr "[:upper:]" "[:lower:]"
+}
+
 # this algorithm is from here: http://unix.stackexchange.com/a/9607
 function _is_in_ssh {
     local in_ssh; in_ssh=1
@@ -174,7 +178,7 @@ fi
 
 # When the `TERM' env. var. is `xterm' we are either in Linux or in Cygwin+Mintty.  When the `TERM' env. var. is
 # `cygwin' we are in Cygwin but using a terminal emulator other thatn Mintty (e.g. ConsoleZ).
-if [[ "${TERM,,}" == "cygwin" ]]; then
+if [[ "$(str_lower "${TERM}")" == "cygwin" ]]; then
     alias cls="tput reset && echo"
 fi
 

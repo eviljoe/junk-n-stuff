@@ -64,7 +64,7 @@ function parse_opts {
         esac
     done
     
-    if [[ "${opt_dry_run}" == "0" && "${opt_os,,}" != "${DEF_OS,,}" ]]; then
+    if [[ "${opt_dry_run}" == "0" && "$(str_lower "${opt_os}")" != "$(str_lower "${DEF_OS}")" ]]; then
         err=${ERR_NEED_DRY_RUN}
         printf "When specifying an OS, must do a dry run.\n" 1>&2
     fi
@@ -200,7 +200,7 @@ function make_symbolic_links {
 }
 
 function make_os_symbolic_links {
-    local oslc; oslc="${opt_os,,}"
+    local oslc; oslc="$(str_lower "${opt_os}")"
     
     if [[ "${oslc}" == "gnu/linux" || "${oslc}" == "linux" ]]; then
         printf "> creating OS specific symbolic links for %s\n" "${opt_os}"
@@ -248,6 +248,10 @@ function make_symbolic_link {
         printf "+ "
         exec_cmd ln -s "${src}" "${dest}"
     fi
+}
+
+function str_lower {
+    printf "%s" "$1" | tr "[:upper:]" "[:lower:]"
 }
 
 main "$@"
