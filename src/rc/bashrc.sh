@@ -47,9 +47,10 @@ function str_lower {
 function _is_in_ssh {
     local in_ssh; in_ssh=1
     
-    if [ -n "${SSH_CLIENT}" ] || [ -n "${SSH_TTY}" ]; then
+    if [[ -n "${SSH_CLIENT}" ]] || [[ -n "${SSH_TTY}" ]]; then
         in_ssh=0
-    else
+    # The `-o' option isn't supported in Cygwin's `ps' command, so don't check this when in Cygwin.
+    elif [[ "$(str_lower "$(uname -o)")" != "cygwin" ]]; then
         case $(ps -o comm= -p $PPID) in
             sshd|*/sshd) in_ssh=0
         esac
