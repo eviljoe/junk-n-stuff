@@ -1,6 +1,7 @@
 import os
-import platform
 import subprocess
+
+from jnsutils import jnsos
 
 
 def update(opts):
@@ -33,10 +34,14 @@ def update(opts):
 def update_atom(opts):
     cmd = []
     
-    if platform.system().lower().startswith('cygwin'):
-        cmd.extend(['cmd', '/C'])
+    if jnsos.is_cygwin():
+        cmd.extend(['cmd', '/C', 'apm'])
+    elif jnsos.is_windows():
+        cmd.append('apm.cmd')
+    elif jnsos.is_linux():
+        cmd.append('apm')
     
-    cmd.extend(['apm', 'update', '--no-confirm'])
+    cmd.extend(['update', '--no-confirm'])
 
     print('updating atom\'s packages')
     run_cmd(opts, '.', cmd)
