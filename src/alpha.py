@@ -1,12 +1,25 @@
 #!/usr/bin/env python3
 
-import sys
-import itertools
+import argparse
 
 
 def main():
-    for s in sorted(itertools.islice(sys.argv, 1, None), key=str.lower):
-        print(s)
+    opts = parse_args()
+    print_sorted(opts.words)
+    
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='Sorts the given words')
+    
+    parser.add_argument('words', nargs='*', metavar='word', default=[],
+                        help='The words (or phrases) to be sorted')
+
+    return parser.parse_args()
+
+
+def print_sorted(words):
+    for word in sorted(words, key=str.lower):
+        print(word)
 
 
 if __name__ == "__main__":
