@@ -4,17 +4,19 @@ import argparse
 import itertools
 import os
 import os.path
-import platform
 import shlex
 import subprocess
 import sys
 
+from jnscommons import jnsos
+from jnscommons import jnsvalid
+
 
 OPEN_COMMANDS = {
-    'linux': ['xdg-open'],
-    'cygwin': ['cygstart'],
-    'darwin': ['open'],
-    'windows': ['start', '/b']
+    jnsos.OS_PREFIX_LINUX: ['xdg-open'],
+    jnsos.OS_PREFIX_CYGWIN: ['cygstart'],
+    jnsos.OS_PREFIX_DARWIN: ['open'],
+    jnsos.OS_PREFIX_WINDOWS: ['start', '/b']
 }
 
 
@@ -52,11 +54,10 @@ def parse_args():
 
 
 def validate_opts(opts):
-    for directory in opts.directories:
-        if not os.path.exists(directory):
-            raise FileNotFoundError('Directory does not exist: {}'.format(directory))
-        elif not os.path.isdir(directory):
-            raise NotADirectoryError('Directory is not a directory: {}'.format(directory))
+    jnsvalid.validate_is_directories(opts.directories)
+    
+    if not opts.dry_run and opts.os and opts.os.lower() != get_default_os().lower():
+        raise NotDryRunError('Cannot specify an OS unless performing a dry run.')
 
 
 def get_latest_file(directories, include_hidden):
@@ -83,7 +84,7 @@ def get_os(opts):
 
 
 def get_default_os():
-    return platform.system()
+    return jnsos.OS
 
 
 def open_file(opts, file_name):
@@ -97,7 +98,7 @@ def open_file(opts, file_name):
     
 
 def get_open_command_list(op_sys):
-    key = next((k for k in OPEN_COMMANDS.keys() if op_sys.lower().startswith(k)), None)
+    key = next((k for k in OPEN_COMMANDS.keys() if jnsos.is_os(k, os=op_sys)), None)
     return None if key is None else OPEN_COMMANDS[key]
 
 
@@ -114,6 +115,10 @@ def get_shell_command(parts):
 
 
 class UnsupportedOSError(Exception):
+    pass
+
+
+class NotDryRunError(Exception):
     pass
 
 

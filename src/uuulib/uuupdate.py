@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-from jnsutils import jnsos
+from jnscommons import jnsos
 
 
 def update(opts):

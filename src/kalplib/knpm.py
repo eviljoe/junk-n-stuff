@@ -3,7 +3,7 @@ import os
 import re
 import subprocess
 
-from . import kutils
+from kalplib import kutils
 
 
 PACK_JSON_FNAME = 'package.json'

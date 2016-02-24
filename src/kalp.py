@@ -10,7 +10,7 @@ from kalplib import knpm
 from kalplib import kutils
 from kalplib import kwatchdog
 
-from jnsutils import jnsos
+from jnscommons import jnsos
 
 
 VERSION = '1.2.2'

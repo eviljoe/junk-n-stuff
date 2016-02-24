@@ -6,7 +6,7 @@ import os.path
 import sys
 import textwrap
 
-from jnsutils import jnsvalid
+from jnscommons import jnsvalid
 from uuulib import uuuconfig
 from uuulib import uuupdate
 

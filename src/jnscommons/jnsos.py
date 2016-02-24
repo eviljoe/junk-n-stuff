@@ -9,20 +9,20 @@ OS_PREFIX_DARWIN = 'darwin'
 OS_PREFIX_WINDOWS = 'windows'
 
 def is_linux(os=OS):
-    return _is_os(os, OS_PREFIX_LINUX)
+    return is_os(OS_PREFIX_LINUX, os=os)
 
 
 def is_cygwin(os=OS):
-    return _is_os(os, OS_PREFIX_CYGWIN)
+    return is_os(OS_PREFIX_CYGWIN, os=os)
 
 
 def is_darwin(os=OS):
-    return _is_os(os, OS_PREFIX_DARWIN)
+    return is_os(OS_PREFIX_DARWIN, os=os)
 
 
 def is_windows(os=OS):
-    return _is_os(os, OS_PREFIX_WINDOWS)
+    return is_os(OS_PREFIX_WINDOWS, os=os)
 
 
-def _is_os(os, prefix):
+def is_os(prefix, os=OS):
     return os and os.lower().startswith(prefix)

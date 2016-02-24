@@ -2,7 +2,7 @@ import shlex
 import subprocess
 import threading
 
-from . import kutils
+from kalplib import kutils
 
 
 class WatchdogThread(threading.Thread):
