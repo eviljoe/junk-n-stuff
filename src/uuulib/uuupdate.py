@@ -4,12 +4,19 @@ import subprocess
 from jnscommons import jnsos
 
 
+_cabal_packages_refreshed = False  # pylint: disable=invalid-name
+
+
 def update(opts):
     count = 0
     
     for directory in opts.gitd_dirs:
         # pylint: disable=cell-var-from-loop
         count = _do_update(count, lambda: update_git_dir(opts, directory))
+    
+    for package in opts.cabal_packages:
+        # pylint: disable=cell-var-from-loop
+        count = _do_update(count, lambda: update_cabal(opts, package))
     
     for directory in opts.git_dirs:
         count = _do_update(count, lambda: update_git(opts, directory))
@@ -59,6 +66,16 @@ def update_atom(opts):
     _run_cmd(opts, cmd)
 
 
+def update_cabal(opts, package):
+    global _cabal_packages_refreshed  # pylint: disable=global-statement,invalid-name
+    
+    if not _cabal_packages_refreshed:
+        _run_cmd(opts, ['cabal', 'update'])
+        _cabal_packages_refreshed = True
+    
+    _run_cmd(opts, ['cabal', 'install', package])
+
+
 def update_pip(opts, package, three):
     cmd = ['pip3'] if three else ['pip']
     cmd.extend(['install', '--upgrade', package])
@@ -100,6 +117,11 @@ def _update_repo(opts, directory, repo_type, config_directory, cmd):
 
 
 def _run_cmd(opts, cmd, cwd='.'):
+    exit_code = 0
+    
     if not opts.dry_run:
         popen = subprocess.Popen(cmd, cwd=cwd)
         popen.wait()
+        exit_code = popen.poll()
+    
+    return exit_code

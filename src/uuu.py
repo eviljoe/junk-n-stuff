@@ -24,6 +24,8 @@ def parse_args():
     
     parser.add_argument('--atom', action='store_true', default=False, dest='atom',
                         help='Specify that Atom\'s packages should be updated (default: %(default)s)')
+    parser.add_argument('--cabal', action='append', default=[], metavar='CBL_PKG', dest='cabal_packages',
+                        help='Specify a cabal package to be updated')
     parser.add_argument('--dry-run', action='store_true', default=False, dest='dry_run',
                         help='Ouput what actions will be performed without taking them (default: %(default)s)')
     parser.add_argument('--git', action='append', default=[], metavar='GIT_REPO', dest='git_dirs',
