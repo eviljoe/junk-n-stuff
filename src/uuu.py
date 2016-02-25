@@ -30,6 +30,10 @@ def parse_args():
                         help='Specify a git reposotory to be updated')
     parser.add_argument('--gitd', action='append', default=[], metavar='GIT_REPO_DIR', dest='gitd_dirs',
                         help='Specify a directory that may contain one or more git reposotories to be updated')
+    parser.add_argument('--pip', action='append', default=[], metavar='PIP_PKG', dest='pip_packages',
+                        help='Specify a pip package to be updated')
+    parser.add_argument('--pip3', action='append', default=[], metavar='PIP3_PKG', dest='pip3_packages',
+                        help='Specify a pip3 package to be updated')
     parser.add_argument('--svn', action='append', default=[], metavar='SVN_REPO', dest='svn_dirs',
                         help='Specify an svn reposotory to be updated')
     parser.add_argument('--svnd', action='append', default=[], metavar='SVN_REPO_DIR', dest='svnd_dirs',
@@ -64,7 +68,7 @@ def create_help_epilog():
 
 
 def read_config_file(opts):
-    uuuconfig.UUUConfigFileReader(os.path.join(os.path.expanduser('~'), '.jns', 'uuu')).read_config_file(opts)
+    uuuconfig.read_config_file(opts, os.path.join(os.path.expanduser('~'), '.jns', 'uuu'))
 
 
 def get_default_config_file_name():

@@ -5,31 +5,43 @@ from jnscommons import jnsos
 
 
 def update(opts):
-    attempted_updates = False
+    count = 0
     
     for directory in opts.gitd_dirs:
-        update_git_dir(opts, directory)
-        attempted_updates = True
+        # pylint: disable=cell-var-from-loop
+        count = _do_update(count, lambda: update_git_dir(opts, directory))
     
     for directory in opts.git_dirs:
-        update_git(opts, directory)
-        attempted_updates = True
+        count = _do_update(count, lambda: update_git(opts, directory))
     
     for directory in opts.svnd_dirs:
-        update_svn_dir(opts, directory)
-        attempted_updates = True
+        # pylint: disable=undefined-loop-variable
+        count = _do_update(count, lambda: update_svn_dir(opts, directory))
     
     for directory in opts.svn_dirs:
-        update_svn(opts, directory)
-        attempted_updates = True
+        count = _do_update(count, lambda: update_svn(opts, directory))
+    
+    for package in opts.pip_packages:
+        # pylint: disable=cell-var-from-loop,undefined-loop-variable
+        count = _do_update(count, lambda: update_pip(opts, package, three=False))
+    
+    for package in opts.pip3_packages:
+        count = _do_update(count, lambda: update_pip(opts, package, three=True))
     
     if opts.atom:
-        update_atom(opts)
-        attempted_updates = True
+        count = _do_update(count, lambda: update_atom(opts))
     
-    if not attempted_updates:
+    if count == 0:
         print('no updates specified')
 
+
+def _do_update(update_count, updater):
+    if update_count > 0:
+        print('------------')
+    
+    updater()
+    
+    return update_count + 1
 
 def update_atom(opts):
     cmd = []
@@ -44,26 +56,34 @@ def update_atom(opts):
     cmd.extend(['update', '--no-confirm'])
 
     print('updating atom\'s packages')
-    run_cmd(opts, '.', cmd)
+    _run_cmd(opts, cmd)
+
+
+def update_pip(opts, package, three):
+    cmd = ['pip3'] if three else ['pip']
+    cmd.extend(['install', '--upgrade', package])
+    
+    print('updating pip{} package: {}'.format('3' if three else '', package))
+    _run_cmd(opts, cmd=cmd)
 
 
 def update_svn_dir(opts, directory):
-    update_repos_in_dir(opts, directory, update_svn)
+    _update_repos_in_dir(opts, directory, update_svn)
 
 
 def update_svn(opts, directory):
-    update_repo(opts, directory, 'svn', '.svn', ['svn', 'update'])
+    _update_repo(opts, directory, 'svn', '.svn', ['svn', 'update'])
 
 
 def update_git_dir(opts, directory):
-    update_repos_in_dir(opts, directory, update_git)
+    _update_repos_in_dir(opts, directory, update_git)
 
 
 def update_git(opts, directory):
-    update_repo(opts, directory, 'git', '.git', ['git', 'pull'])
+    _update_repo(opts, directory, 'git', '.git', ['git', 'pull'])
 
 
-def update_repos_in_dir(opts, directory, update_fn):
+def _update_repos_in_dir(opts, directory, update_fn):
     for fname in os.listdir(path=directory):
         fname = os.path.join(directory, fname)
         
@@ -71,15 +91,15 @@ def update_repos_in_dir(opts, directory, update_fn):
             update_fn(opts, fname)
 
 
-def update_repo(opts, directory, repo_type, config_directory, cmd):
+def _update_repo(opts, directory, repo_type, config_directory, cmd):
     if os.path.exists(os.path.join(directory, config_directory)):
         print('updating {} repository: {}'.format(repo_type, directory))
-        run_cmd(opts, directory, cmd)
+        _run_cmd(opts, cmd, cwd=directory)
     else:
         print('skipping {} repository with no {} directory: {}'.format(repo_type, config_directory, directory))
 
 
-def run_cmd(opts, cwd, cmd):
+def _run_cmd(opts, cmd, cwd='.'):
     if not opts.dry_run:
         popen = subprocess.Popen(cmd, cwd=cwd)
         popen.wait()
