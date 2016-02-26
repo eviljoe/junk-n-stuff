@@ -54,7 +54,7 @@ def _parse_config_file_line(opts, line, ccmd):
 
 
 def _process_cmd(opts, ccmd):
-    if len(ccmd.cmd) > 0:
+    if _should_process_cmd(ccmd.cmd):
         processor = _PROCESSORS[ccmd.cmd.lower()]
         
         if processor is None:
@@ -62,6 +62,10 @@ def _process_cmd(opts, ccmd):
                 ccmd.config_file_name, ccmd.line_num, ccmd.cmd))
         else:
             processor(opts, ccmd)
+
+
+def _should_process_cmd(cmd):
+    return len(cmd) > 0 and not cmd.startswith('#')
 
 
 def _process_cmd_atom(opts, ccmd):  # pylint: disable=unused-argument
