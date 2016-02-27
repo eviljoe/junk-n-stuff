@@ -1,0 +1,23 @@
+" Allow syntax highlighting
+:syntax on
+
+" Set the color scheme
+:colorscheme monokai
+
+" Set up tab width to be 4 and allow smart indenting
+:set tabstop=4
+:set shiftwidth=4
+:set expandtab
+:set smartindent
+
+" Allow the cursor to be placed one character past the end of the line when in view mode
+:set virtualedit=onemore
+
+" Show the line and column number at the bottom right of the screen
+:set ruler
+
+" Fixes the issue where the `backspace' key was not working in Cygwin
+:set bs=2
+
+" Allows left & right arrow keys to wrap across line boundries
+:set whichwrap+=<,>,h,l,[,]

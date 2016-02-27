@@ -184,6 +184,7 @@ function make_symbolic_links {
     printf "> creating RC symbolic links\n"
     make_symbolic_link "${jns_src_dir}/rc/bashrc.sh" "${opt_user_home}/.bashrc-common"
     make_symbolic_link "${jns_src_dir}/rc/inputrc" "${opt_user_home}/.inputrc"
+    make_symbolic_link "${jns_src_dir}/rc/vimrc" "${opt_user_home}/.vimrc"
     
     # Scripts
     printf "> creating executable symbolic links\n"
