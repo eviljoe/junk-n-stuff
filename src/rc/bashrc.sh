@@ -139,6 +139,10 @@ alias cdp..='cd "$(dirname "$(pwd -P)")"'
 alias desktop="cd ~/Desktop"
 alias docs="cd ~/Documents"
 
+# less
+alias less="less -iRP '?f%f:<stdin>.?m (%i of %m)., %lb of %L (%Pb\\%)'"
+alias lgs="less +G -S"
+
 # ls
 if _can_ls_group_dirs_first; then
     alias ls="ls -hp --color=auto --group-directories-first"
@@ -156,7 +160,6 @@ alias cls="tput reset"
 alias df="df -h"
 alias du="du -h"
 alias emacs="emacs -nw"
-alias less="less -iRP '?f%f:<stdin>.?m (%i of %m)., %lb of %L (%Pb\\%)'"
 alias open="xdg-start"
 alias naut="nemo"
 alias path='printf "%s\n" "${PATH}"'
