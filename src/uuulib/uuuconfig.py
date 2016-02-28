@@ -76,6 +76,10 @@ def _process_cmd_cabal(opts, ccmd):
     _process_cmd_with_arg(ccmd, opts.cabal_packages)
 
 
+def _process_cmd_choco(opts, ccmd):  # pylint: disable=unused-argument
+    opts.choco = True
+
+
 def _process_cmd_git(opts, ccmd):
     _process_cmd_with_directory_arg(ccmd, opts.git_dirs)
 
@@ -148,6 +152,7 @@ class InvalidConfigError(Exception):
  
 CMD_ATOM = 'atom'
 CMD_CABAL = 'cabal'
+CMD_CHOCO = 'choco'
 CMD_GIT = 'git'
 CMD_GITD = 'gitd'
 CMD_PIP = 'pip'
@@ -158,6 +163,7 @@ CMD_SVND = 'svnd'
 _PROCESSORS = {
     CMD_ATOM: _process_cmd_atom,
     CMD_CABAL: _process_cmd_cabal,
+    CMD_CHOCO: _process_cmd_choco,
     CMD_GIT: _process_cmd_git,
     CMD_GITD: _process_cmd_gitd,
     CMD_PIP: _process_cmd_pip,

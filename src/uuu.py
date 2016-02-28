@@ -6,6 +6,7 @@ import os.path
 import sys
 import textwrap
 
+from jnscommons import jnsos
 from jnscommons import jnsvalid
 from uuulib import uuuconfig
 from uuulib import uuupdate
@@ -13,7 +14,10 @@ from uuulib import uuupdate
 
 def main():
     opts = parse_args()
-    read_config_file(opts)
+    
+    if not opts.no_config:
+        read_config_file(opts)
+        
     validate_opts(opts)
     uuupdate.update(opts)
 
@@ -24,22 +28,28 @@ def parse_args():
     
     parser.add_argument('--atom', action='store_true', default=False, dest='atom',
                         help='Specify that Atom\'s packages should be updated (default: %(default)s)')
-    parser.add_argument('--cabal', action='append', default=[], metavar='CBL_PKG', dest='cabal_packages',
+    parser.add_argument('--cabal', action='append', default=[], metavar='cabal_pkg', dest='cabal_packages',
                         help='Specify a cabal package to be updated')
+    parser.add_argument('--choco', action='store_true', default=False, dest='choco',
+                        help='Specify that all Chocolatey packages should be updated (default: %(default)s)')
     parser.add_argument('--dry-run', action='store_true', default=False, dest='dry_run',
                         help='Ouput what actions will be performed without taking them (default: %(default)s)')
-    parser.add_argument('--git', action='append', default=[], metavar='GIT_REPO', dest='git_dirs',
+    parser.add_argument('--git', action='append', default=[], metavar='git_repo', dest='git_dirs',
                         help='Specify a git reposotory to be updated')
-    parser.add_argument('--gitd', action='append', default=[], metavar='GIT_REPO_DIR', dest='gitd_dirs',
+    parser.add_argument('--gitd', action='append', default=[], metavar='git_repo_dir', dest='gitd_dirs',
                         help='Specify a directory that may contain one or more git reposotories to be updated')
-    parser.add_argument('--pip', action='append', default=[], metavar='PIP_PKG', dest='pip_packages',
+    parser.add_argument('--no-config', action='store_true', default=False, dest='no_config',
+                        help='Do not read the configuration file (default: %(default)s)')
+    parser.add_argument('--pip', action='append', default=[], metavar='pip_pkg', dest='pip_packages',
                         help='Specify a pip package to be updated')
-    parser.add_argument('--pip3', action='append', default=[], metavar='PIP3_PKG', dest='pip3_packages',
+    parser.add_argument('--pip3', action='append', default=[], metavar='pip3_pkg', dest='pip3_packages',
                         help='Specify a pip3 package to be updated')
-    parser.add_argument('--svn', action='append', default=[], metavar='SVN_REPO', dest='svn_dirs',
+    parser.add_argument('--svn', action='append', default=[], metavar='svn_repo', dest='svn_dirs',
                         help='Specify an svn reposotory to be updated')
-    parser.add_argument('--svnd', action='append', default=[], metavar='SVN_REPO_DIR', dest='svnd_dirs',
+    parser.add_argument('--svnd', action='append', default=[], metavar='svn_repo_dir', dest='svnd_dirs',
                         help='Specify a directory that may contain one or more svn reposotories to be updated')
+    parser.add_argument('--verbose', action='store_true', default=False, dest='verbose',
+                        help='Adds more output (default: %(default)s)')
     
     opts = parser.parse_args()
     
@@ -83,6 +93,17 @@ def validate_opts(opts):
     jnsvalid.validate_is_directories(opts.gitd_dirs)
     jnsvalid.validate_is_directories(opts.svn_dirs)
     jnsvalid.validate_is_directories(opts.svnd_dirs)
+    validate_can_update_choco(opts)
+    
+
+def validate_can_update_choco(opts):
+    if opts.choco and not (opts.dry_run or jnsos.is_windows() or jnsos.is_cygwin()):
+        raise NotChocoOSError(
+            'Can only update Chocolatey packages when in Windows, in Cygwin, or performing a dry run.')
+
+
+class NotChocoOSError(Exception):
+    pass
 
 
 if __name__ == '__main__':

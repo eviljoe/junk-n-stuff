@@ -1,5 +1,6 @@
 import itertools
 import os
+import shlex
 import subprocess
 
 from jnscommons import jnsos
@@ -35,6 +36,9 @@ class Updater():
         for package in opts.pip3_packages:
             self.update_pip(opts, package, three=True)
         
+        if opts.choco:
+            self.update_choco(opts)
+        
         if opts.atom:
             self.update_atom(opts)
         
@@ -53,7 +57,7 @@ class Updater():
         
         cmd.extend(['update', '--no-confirm'])
 
-        self._run_update(opts=opts, cmds=[cmd], title='updating atom\'s packages')
+        self._run_update(opts=opts, cmds=[cmd], title="updating atom's packages")
 
     def update_cabal(self, opts, package):
         cmds = []
@@ -65,6 +69,15 @@ class Updater():
         cmds.append(['cabal', 'install', package])
         self._run_update(opts=opts, cmds=cmds, title='updating cabal package: {}'.format(package))
 
+    def update_choco(self, opts):
+        cmd = [
+            'Powershell',
+            '-Command',
+            '& { Start-Process "choco" -ArgumentList @("update", "all") -Verb RunAs }'
+        ]
+        
+        self._run_update(opts=opts, cmds=[cmd], title='updating chocolatey packages')
+    
     def update_pip(self, opts, package, three):
         cmd = ['pip3'] if three else ['pip']
         cmd.extend(['install', '--upgrade', package])
@@ -102,7 +115,7 @@ class Updater():
     
     def _run_update(self, opts, cmds=None, cwd='.', title=None):
         if self._update_count > 0:
-            print('----------')
+            _print_separator()
         
         if title:
             print(title)
@@ -110,10 +123,14 @@ class Updater():
         self._update_count += 1
         
         return _run_cmds(opts, cmds, cwd)
-        
+
 
 def update(opts):
     return Updater().update(opts)
+
+
+def _print_separator():
+    print('----------')
 
 
 def _run_cmds(opts, cmds, cwd='.'):
@@ -125,6 +142,9 @@ def _run_cmds(opts, cmds, cwd='.'):
 
 def _run_cmd(opts, cmd, cwd='.'):
     exit_code = 0
+    
+    if opts.verbose:
+        print('{}'.format(' '.join([shlex.quote(token) for token in cmd])))
     
     if not opts.dry_run:
         popen = subprocess.Popen(cmd, cwd=cwd)
