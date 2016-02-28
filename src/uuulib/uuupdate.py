@@ -36,6 +36,9 @@ class Updater():
         for package in opts.pip3_packages:
             self.update_pip(opts, package, three=True)
         
+        if opts.init_jns:
+            self.update_init_jns(opts)
+        
         if opts.choco:
             self.update_choco(opts)
         
@@ -77,6 +80,9 @@ class Updater():
         ]
         
         self._run_update(opts=opts, cmds=[cmd], title='updating chocolatey packages')
+    
+    def update_init_jns(self, opts):
+        self._run_update(opts=opts, cmds=[['init-jns']], title='initializing junk-n-stuff')
     
     def update_pip(self, opts, package, three):
         cmd = ['pip3'] if three else ['pip']

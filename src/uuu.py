@@ -27,7 +27,7 @@ def parse_args():
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     
     parser.add_argument('--atom', action='store_true', default=False, dest='atom',
-                        help='Specify that Atom\'s packages should be updated (default: %(default)s)')
+                        help="Specify that Atom's packages should be updated (default: %(default)s)")
     parser.add_argument('--cabal', action='append', default=[], metavar='cabal_pkg', dest='cabal_packages',
                         help='Specify a cabal package to be updated')
     parser.add_argument('--choco', action='store_true', default=False, dest='choco',
@@ -38,6 +38,8 @@ def parse_args():
                         help='Specify a git reposotory to be updated')
     parser.add_argument('--gitd', action='append', default=[], metavar='git_repo_dir', dest='gitd_dirs',
                         help='Specify a directory that may contain one or more git reposotories to be updated')
+    parser.add_argument('--init-jns', action='store_true', default=False, dest='init_jns',
+                        help="Invoke `init-jns' from junk-n-stuff (default: %(default)s)")
     parser.add_argument('--no-config', action='store_true', default=False, dest='no_config',
                         help='Do not read the configuration file (default: %(default)s)')
     parser.add_argument('--pip', action='append', default=[], metavar='pip_pkg', dest='pip_packages',
@@ -102,7 +104,16 @@ def validate_can_update_choco(opts):
             'Can only update Chocolatey packages when in Windows, in Cygwin, or performing a dry run.')
 
 
+def validate_can_init_jns(opts):
+    if opts.init_jns and not opts.dry_run and jnsos.is_windows():
+        raise NotInitJNSOSError('Cannot initialize junk-n-stuff when in Windows unless performing a dry run')
+
+
 class NotChocoOSError(Exception):
+    pass
+
+
+class NotInitJNSOSError(Exception):
     pass
 
 

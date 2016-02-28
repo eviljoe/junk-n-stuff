@@ -88,6 +88,10 @@ def _process_cmd_gitd(opts, ccmd):
     _process_cmd_with_directory_arg(ccmd, opts.gitd_dirs)
 
 
+def _process_cmd_init_jns(opts, ccmd):  # pylint: disable=unused-argument
+    opts.init_jns = True
+
+
 def _process_cmd_pip(opts, ccmd):
     _process_cmd_with_arg(ccmd, opts.pip_packages)
 
@@ -155,6 +159,7 @@ CMD_CABAL = 'cabal'
 CMD_CHOCO = 'choco'
 CMD_GIT = 'git'
 CMD_GITD = 'gitd'
+CMD_INIT_JNS = 'init-jns'
 CMD_PIP = 'pip'
 CMD_PIP3 = 'pip3'
 CMD_SVN = 'svn'
@@ -166,6 +171,7 @@ _PROCESSORS = {
     CMD_CHOCO: _process_cmd_choco,
     CMD_GIT: _process_cmd_git,
     CMD_GITD: _process_cmd_gitd,
+    CMD_INIT_JNS: _process_cmd_init_jns,
     CMD_PIP: _process_cmd_pip,
     CMD_PIP3: _process_cmd_pip3,
     CMD_SVN: _process_cmd_svn,
