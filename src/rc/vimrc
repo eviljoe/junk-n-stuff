@@ -2,7 +2,9 @@
 :syntax on
 
 " Set the color scheme
-:colorscheme monokai
+:if $TERM != 'cygwin'
+:  colorscheme monokai
+:endif
 
 " Set up tab width to be 4 and allow smart indenting
 :set tabstop=4
