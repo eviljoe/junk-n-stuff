@@ -113,6 +113,15 @@ if [[ "${_bashrc_os}" == "cygwin" ]]; then
     }
 fi
 
+# ############# #
+# Shell Options #
+# ############# #
+
+shopt -s checkwinsize # Update window size after every command
+shopt -s histappend # Append to the history file, don't overwrite it
+shopt -s dirspell # Correct spelling errors during tab-completion
+shopt -s cdspell 2> /dev/null # Correct spelling errors in arguments supplied to cd
+
 # ############## #
 # Env. Variables #
 # ############## #
