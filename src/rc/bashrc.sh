@@ -119,8 +119,11 @@ fi
 
 shopt -s checkwinsize # Update window size after every command
 shopt -s histappend # Append to the history file, don't overwrite it
-shopt -s dirspell # Correct spelling errors during tab-completion
 shopt -s cdspell 2> /dev/null # Correct spelling errors in arguments supplied to cd
+
+if [[ "${BASH_VERSION:0:1}" -gt "3" ]]; then
+    shopt -s dirspell # Correct spelling errors during tab-completion
+fi
 
 # ############## #
 # Env. Variables #
