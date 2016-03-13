@@ -42,6 +42,9 @@ class Updater():
         if opts.choco:
             self.update_choco(opts)
         
+        if opts.cygwin_exe:
+            self.update_cygwin(opts)
+        
         if opts.atom:
             self.update_atom(opts)
         
@@ -80,6 +83,10 @@ class Updater():
         ]
         
         self._run_update(opts=opts, cmds=[cmd], title='updating chocolatey packages')
+        
+    def update_cygwin(self, opts):
+        cmd = [opts.cygwin_exe, '-q']
+        self._run_update(opts=opts, cmds=[cmd], title='updating Cygwin packages')
     
     def update_init_jns(self, opts):
         self._run_update(opts=opts, cmds=[['init-jns']], title='initializing junk-n-stuff')

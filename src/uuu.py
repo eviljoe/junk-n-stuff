@@ -34,6 +34,8 @@ def parse_args():
                         help='Specify that all Chocolatey packages should be updated (default: %(default)s)')
     parser.add_argument('--dry-run', action='store_true', default=False, dest='dry_run',
                         help='Ouput what actions will be performed without taking them (default: %(default)s)')
+    parser.add_argument('--cygwin', action='store', default=None, metavar='setup_exe', dest='cygwin_exe',
+                        help="Specify the location of Cygwin's setup-x86.exe or setup-x86_64.exe")
     parser.add_argument('--git', action='append', default=[], metavar='git_repo', dest='git_dirs',
                         help='Specify a git reposotory to be updated')
     parser.add_argument('--gitd', action='append', default=[], metavar='git_repo_dir', dest='gitd_dirs',
@@ -95,6 +97,7 @@ def validate_opts(opts):
     jnsvalid.validate_is_directories(opts.gitd_dirs)
     jnsvalid.validate_is_directories(opts.svn_dirs)
     jnsvalid.validate_is_directories(opts.svnd_dirs)
+    jnsvalid.validate_is_file(opts.cygwin_exe)
     validate_can_update_choco(opts)
     
 

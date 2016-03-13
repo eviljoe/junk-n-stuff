@@ -79,6 +79,10 @@ def _process_cmd_cabal(opts, ccmd):
 def _process_cmd_choco(opts, ccmd):  # pylint: disable=unused-argument
     opts.choco = True
 
+    
+def _process_cmd_cygwin(opts, ccmd):  # pylint: disable=unused-argument
+    opts.cygwin_exe = _process_cmd_with_file_arg(ccmd)
+
 
 def _process_cmd_git(opts, ccmd):
     _process_cmd_with_directory_arg(ccmd, opts.git_dirs)
@@ -114,6 +118,14 @@ def _process_cmd_with_directory_arg(ccmd, dirs):
             ccmd.config_file_name, ccmd.line_num, ccmd.cmd))
 
     dirs.append(_normalize_home_dir(ccmd.arg))
+
+
+def _process_cmd_with_file_arg(ccmd):
+    if len(ccmd.arg) == 0:
+        raise InvalidConfigError('[{}, line {}] Configuration command requires file: {}'.format(
+            ccmd.config_file_name, ccmd.line_num, ccmd.cmd))
+
+    return _normalize_home_dir(ccmd.arg)
 
 
 def _process_cmd_with_arg(ccmd, args):
@@ -157,6 +169,7 @@ class InvalidConfigError(Exception):
 CMD_ATOM = 'atom'
 CMD_CABAL = 'cabal'
 CMD_CHOCO = 'choco'
+CMD_CYGWIN = 'cygwin'
 CMD_GIT = 'git'
 CMD_GITD = 'gitd'
 CMD_INIT_JNS = 'init-jns'
@@ -169,6 +182,7 @@ _PROCESSORS = {
     CMD_ATOM: _process_cmd_atom,
     CMD_CABAL: _process_cmd_cabal,
     CMD_CHOCO: _process_cmd_choco,
+    CMD_CYGWIN: _process_cmd_cygwin,
     CMD_GIT: _process_cmd_git,
     CMD_GITD: _process_cmd_gitd,
     CMD_INIT_JNS: _process_cmd_init_jns,
