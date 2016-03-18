@@ -85,7 +85,7 @@ class Updater():
         self._run_update(opts=opts, cmds=[cmd], title='updating chocolatey packages')
         
     def update_cygwin(self, opts):
-        cmd = [opts.cygwin_exe, '-q']
+        cmd = [opts.cygwin_exe, '--quiet-mode', '--no-desktop']
         self._run_update(opts=opts, cmds=[cmd], title='updating Cygwin packages')
     
     def update_init_jns(self, opts):

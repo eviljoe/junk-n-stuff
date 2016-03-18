@@ -97,8 +97,12 @@ def validate_opts(opts):
     jnsvalid.validate_is_directories(opts.gitd_dirs)
     jnsvalid.validate_is_directories(opts.svn_dirs)
     jnsvalid.validate_is_directories(opts.svnd_dirs)
-    jnsvalid.validate_is_file(opts.cygwin_exe)
+    
+    if opts.cygwin_exe:
+        jnsvalid.validate_is_file(opts.cygwin_exe)
+    
     validate_can_update_choco(opts)
+    validate_can_init_jns(opts)
     
 
 def validate_can_update_choco(opts):
