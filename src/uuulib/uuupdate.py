@@ -79,7 +79,7 @@ class Updater():
         cmd = [
             'Powershell',
             '-Command',
-            '& { Start-Process "choco" -ArgumentList @("update", "all") -Verb RunAs }'
+            '& { Start-Process "choco" -ArgumentList @("upgrade", "all") -Verb RunAs }'
         ]
         
         self._run_update(opts=opts, cmds=[cmd], title='updating chocolatey packages')
