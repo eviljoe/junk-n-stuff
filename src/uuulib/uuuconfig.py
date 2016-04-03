@@ -3,12 +3,12 @@ import os
 import re
 
 
-def read_config_file(opts, config_file_name):
+def read_config_file(updaters, opts, config_file_name):
     if os.path.isfile(config_file_name):
-        _parse_config_file(opts, config_file_name)
+        _parse_config_file(updaters=updaters, opts=opts, config_file_name=config_file_name)
 
 
-def _parse_config_file(opts, config_file_name):
+def _parse_config_file(updaters, opts, config_file_name):
     with open(config_file_name, 'r') as config_file:
         line_num = 0
         
@@ -19,10 +19,11 @@ def _parse_config_file(opts, config_file_name):
             ccmd.config_file_name = config_file_name
             ccmd.line_num = line_num
             
-            _parse_config_file_line(opts, line, ccmd)
+            _parse_config_file_line(line, ccmd)
+            _process_cmd(updaters, opts, ccmd)
 
 
-def _parse_config_file_line(opts, line, ccmd):
+def _parse_config_file_line(line, ccmd):
     index = 0
     ccmd.cmd = ''
     ccmd.arg = ''
@@ -44,8 +45,6 @@ def _parse_config_file_line(opts, line, ccmd):
     while not _at_eol(line, index):
         ccmd.arg += line[index]
         index += 1
-    
-    _process_cmd(opts, ccmd)
 
 
 # ################## #
@@ -53,87 +52,23 @@ def _parse_config_file_line(opts, line, ccmd):
 # ################## #
 
 
-def _process_cmd(opts, ccmd):
+def _process_cmd(updaters, opts, ccmd):
     if _should_process_cmd(ccmd.cmd):
-        processor = _PROCESSORS[ccmd.cmd.lower()]
+        updater = _get_updater_for_command(updaters, ccmd)
         
-        if processor is None:
+        if updater is None:
             raise InvalidConfigError('[{}, line {}] Invalid Configuration command: {}'.format(
                 ccmd.config_file_name, ccmd.line_num, ccmd.cmd))
-        else:
-            processor(opts, ccmd)
+        
+        updater.update_opts_for_command(opts, ccmd)
+
+
+def _get_updater_for_command(updaters, ccmd):
+    return next(iter([u for u in updaters if u.get_config_command().lower() == ccmd.cmd.lower()]), None)
 
 
 def _should_process_cmd(cmd):
     return len(cmd) > 0 and not cmd.startswith('#')
-
-
-def _process_cmd_atom(opts, ccmd):  # pylint: disable=unused-argument
-    opts.atom = True
-
-
-def _process_cmd_cabal(opts, ccmd):
-    _process_cmd_with_arg(ccmd, opts.cabal_packages)
-
-
-def _process_cmd_choco(opts, ccmd):  # pylint: disable=unused-argument
-    opts.choco = True
-
-    
-def _process_cmd_cygwin(opts, ccmd):  # pylint: disable=unused-argument
-    opts.cygwin_exe = _process_cmd_with_file_arg(ccmd)
-
-
-def _process_cmd_git(opts, ccmd):
-    _process_cmd_with_directory_arg(ccmd, opts.git_dirs)
-
-
-def _process_cmd_gitd(opts, ccmd):
-    _process_cmd_with_directory_arg(ccmd, opts.gitd_dirs)
-
-
-def _process_cmd_init_jns(opts, ccmd):  # pylint: disable=unused-argument
-    opts.init_jns = True
-
-
-def _process_cmd_pip(opts, ccmd):
-    _process_cmd_with_arg(ccmd, opts.pip_packages)
-
-
-def _process_cmd_pip3(opts, ccmd):
-    _process_cmd_with_arg(ccmd, opts.pip3_packages)
-
-
-def _process_cmd_svn(opts, ccmd):
-    _process_cmd_with_directory_arg(ccmd, opts.svn_dirs)
-
-
-def _process_cmd_svnd(opts, ccmd):
-    _process_cmd_with_directory_arg(ccmd, opts.svnd_dirs)
-
-
-def _process_cmd_with_directory_arg(ccmd, dirs):
-    if len(ccmd.arg) == 0:
-        raise InvalidConfigError('[{}, line {}] Configuration command requires directory: {}'.format(
-            ccmd.config_file_name, ccmd.line_num, ccmd.cmd))
-
-    dirs.append(_normalize_home_dir(ccmd.arg))
-
-
-def _process_cmd_with_file_arg(ccmd):
-    if len(ccmd.arg) == 0:
-        raise InvalidConfigError('[{}, line {}] Configuration command requires file: {}'.format(
-            ccmd.config_file_name, ccmd.line_num, ccmd.cmd))
-
-    return _normalize_home_dir(ccmd.arg)
-
-
-def _process_cmd_with_arg(ccmd, args):
-    if len(ccmd.arg) == 0:
-        raise InvalidConfigError('[{}, line {}] Configuration command requires argument: {}'.format(
-            ccmd.config_file_name, ccmd.line_num, ccmd.cmd))
-
-    args.append(ccmd.arg)
 
 
 # ################# #
@@ -159,35 +94,3 @@ def _normalize_home_dir(directory):
 
 class InvalidConfigError(Exception):
     pass
-
-
-# ######### #
-# Constants #
-# ######### #
-
- 
-CMD_ATOM = 'atom'
-CMD_CABAL = 'cabal'
-CMD_CHOCO = 'choco'
-CMD_CYGWIN = 'cygwin'
-CMD_GIT = 'git'
-CMD_GITD = 'gitd'
-CMD_INIT_JNS = 'init-jns'
-CMD_PIP = 'pip'
-CMD_PIP3 = 'pip3'
-CMD_SVN = 'svn'
-CMD_SVND = 'svnd'
-
-_PROCESSORS = {
-    CMD_ATOM: _process_cmd_atom,
-    CMD_CABAL: _process_cmd_cabal,
-    CMD_CHOCO: _process_cmd_choco,
-    CMD_CYGWIN: _process_cmd_cygwin,
-    CMD_GIT: _process_cmd_git,
-    CMD_GITD: _process_cmd_gitd,
-    CMD_INIT_JNS: _process_cmd_init_jns,
-    CMD_PIP: _process_cmd_pip,
-    CMD_PIP3: _process_cmd_pip3,
-    CMD_SVN: _process_cmd_svn,
-    CMD_SVND: _process_cmd_svnd
-}
