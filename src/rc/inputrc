@@ -8,9 +8,6 @@ set completion-ignore-case on
 # Treat hyphens and underscores as equivalent
 set completion-map-case on
 
-# Display matches for ambiguous patterns at first tab press
-set show-all-if-ambiguous on
-
 # ############ #
 # Key Bindings #
 # ############ #
