@@ -33,7 +33,7 @@ class AbstractUpdater(metaclass=abc.ABCMeta):
     
     def update_opts_set_file(self, ccmd, opts, argument_name):
         _verify_has_argument(ccmd, argtype='file')
-        opts[argument_name] = ccmd.arg
+        setattr(opts, argument_name, ccmd.arg)
     
     def update_opts_add_argument(self, ccmd, arguments):
         _verify_has_argument(ccmd)
