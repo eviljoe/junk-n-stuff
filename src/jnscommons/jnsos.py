@@ -8,6 +8,7 @@ OS_PREFIX_CYGWIN = 'cygwin'
 OS_PREFIX_DARWIN = 'darwin'
 OS_PREFIX_WINDOWS = 'windows'
 
+
 def is_linux(os=OS):
     return is_os(OS_PREFIX_LINUX, os=os)
 

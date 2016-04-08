@@ -1,4 +1,5 @@
 from uuulib.updaters import abstractupdater
+from jnscommons import jnsos
 
 
 _CMD = 'pip3'
@@ -20,5 +21,8 @@ class PipUpdater(abstractupdater.AbstractUpdater):
     
     def update(self, opts, runner):
         for package in opts.pip3_packages:
-            runner.run(opts=opts, cmds=[['pip3', 'install', '--upgrade', package]],
+            cmd = ['sudo'] if jnsos.is_linux() else []
+            cmd.extend(['pip3', 'install', '--upgrade', package])
+            
+            runner.run(opts=opts, cmds=[cmd],
                        title='updating pip3 package: {}'.format(package))
