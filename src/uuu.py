@@ -15,6 +15,7 @@ from uuulib.updaters import cygwin
 from uuulib.updaters import git
 from uuulib.updaters import gitd
 from uuulib.updaters import initjns
+from uuulib.updaters import npm
 from uuulib.updaters import pip
 from uuulib.updaters import pip3
 from uuulib.updaters import svn
@@ -32,6 +33,7 @@ UPDATERS = [
     cabal.CabalUpdater(),
     choco.ChocoUpdater(),
     cygwin.CygwinUpdater(),
+    npm.NPMUpdater(),
     atom.AtomUpdater()
 ]
 
