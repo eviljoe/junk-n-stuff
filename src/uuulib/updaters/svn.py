@@ -4,6 +4,7 @@ from jnscommons import jnsvalid
 
 _CMD = 'svn'
 
+
 class SVNUpdater(abstractupdater.AbstractRepoUpdater):
     def add_help_argument(self, parser):
         parser.add_argument('--' + _CMD, action='append', default=[], metavar='svn_repo', dest='svn_dirs',

@@ -18,6 +18,9 @@ class InitJNSUpdater(abstractupdater.AbstractUpdater):
     def validate_opts(self, opts):
         return
     
+    def is_root_required(self, opts):
+        return False
+    
     def update(self, opts, runner):
         if opts.init_jns:
             runner.run(opts=opts, cmds=[['init-jns']], title='initializing junk-n-stuff')

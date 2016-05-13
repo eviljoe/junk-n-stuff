@@ -22,6 +22,9 @@ class CygwinUpdater(abstractupdater.AbstractUpdater):
             raise NotCygwinOSError(
                 'Can only update Cygwin packages when in Windows, in Cygwin, or performing a dry run.')
     
+    def is_root_required(self, opts):
+        return False
+    
     def update(self, opts, runner):
         if opts.cygwin_exe:
             cmds = [[opts.cygwin_exe, '--quiet-mode', '--no-desktop']]

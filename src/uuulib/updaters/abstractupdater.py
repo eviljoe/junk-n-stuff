@@ -21,6 +21,10 @@ class AbstractUpdater(metaclass=abc.ABCMeta):
         raise NotImplementedError()
     
     @abc.abstractmethod
+    def is_root_required(self, opts):
+        raise NotImplementedError()
+    
+    @abc.abstractmethod
     def update(self, opts, runner):
         raise NotImplementedError()
     
@@ -58,6 +62,9 @@ class AbstractRepoUpdater(AbstractUpdater, metaclass=abc.ABCMeta):
     def get_update_cmd(self):
         raise NotImplementedError()
 
+    def is_root_required(self, opts):
+        return False
+
     def update(self, opts, runner):
         for repo_dir in self.get_repos(opts):
             self.update_repo(opts=opts, runner=runner, directory=repo_dir, repo_type=self.get_repo_type(),
@@ -77,6 +84,9 @@ class AbstractRepoDirUpdater(AbstractRepoUpdater, metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def get_repo_dirs(self, opts):
         raise NotImplementedError()
+    
+    def is_root_required(self, opts):
+        return False
     
     def update(self, opts, runner):
         for repo_dir in self.get_repo_dirs(opts):

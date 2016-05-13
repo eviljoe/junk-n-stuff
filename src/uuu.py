@@ -6,6 +6,8 @@ import os.path
 import sys
 import textwrap
 
+from jnscommons import jnsos
+
 from uuulib import uuuconfig
 from uuulib import uuurunner
 from uuulib.updaters import atom
@@ -40,12 +42,14 @@ UPDATERS = [
 
 def main():
     opts = parse_args()
+    runner = uuurunner.UUURunner()
     
     if not opts.no_config:
         read_config_file(opts)
         
     validate_opts(opts)
-    update(opts)
+    sudo(opts, runner)
+    update(opts, runner)
 
 
 def parse_args():
@@ -105,9 +109,12 @@ def validate_opts(opts):
         updater.validate_opts(opts)
 
 
-def update(opts):
-    runner = uuurunner.UUURunner()
-    
+def sudo(opts, runner):
+    if not jnsos.is_windows() and next((u for u in UPDATERS if u.is_root_required(opts)), None) is not None:
+        runner.run(opts=opts, cmds=[['sudo', 'echo', 'privileges', 'esclated']], title='esclating privileges')
+
+
+def update(opts, runner):
     for updater in UPDATERS:
         updater.update(opts=opts, runner=runner)
 

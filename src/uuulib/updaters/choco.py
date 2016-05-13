@@ -21,6 +21,9 @@ class ChocoUpdater(abstractupdater.AbstractUpdater):
             raise NotChocoOSError(
                 'Can only update Chocolatey packages when in Windows, in Cygwin, or performing a dry run.')
     
+    def is_root_required(self, opts):
+        return False
+    
     def update(self, opts, runner):
         if opts.choco:
             cmds = [[

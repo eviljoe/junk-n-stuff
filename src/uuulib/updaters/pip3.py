@@ -19,6 +19,9 @@ class PipUpdater(abstractupdater.AbstractUpdater):
     def validate_opts(self, opts):
         return
     
+    def is_root_required(self, opts):
+        return len(opts.pip3_packages) > 0
+    
     def update(self, opts, runner):
         for package in opts.pip3_packages:
             cmd = ['sudo'] if jnsos.is_linux() else []

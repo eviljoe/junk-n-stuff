@@ -19,6 +19,9 @@ class NPMUpdater(abstractupdater.AbstractUpdater):
     def validate_opts(self, opts):
         return
     
+    def is_root_required(self, opts):
+        return opts.npm_packages
+    
     def update(self, opts, runner):
         if opts.npm_packages:
             cmd = ['sudo'] if jnsos.is_linux() else []

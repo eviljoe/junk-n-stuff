@@ -21,6 +21,9 @@ class CabalUpdater(abstractupdater.AbstractUpdater):
     def validate_opts(self, opts):
         return
     
+    def is_root_required(self, opts):
+        return False
+    
     def update(self, opts, runner):
         for package in opts.cabal_packages:
             cmds = []

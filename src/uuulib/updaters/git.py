@@ -4,6 +4,7 @@ from jnscommons import jnsvalid
 
 _CMD = 'git'
 
+
 class GitUpdater(abstractupdater.AbstractRepoUpdater):
     def add_help_argument(self, parser):
         parser.add_argument('--' + _CMD, action='append', default=[], metavar='git_repo', dest='git_dirs',
