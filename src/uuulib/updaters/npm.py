@@ -22,7 +22,7 @@ class NPMUpdater(abstractupdater.AbstractUpdater):
     def update(self, opts, runner):
         if opts.npm_packages:
             cmd = ['sudo'] if jnsos.is_linux() else []
-            cmd.extend(['npm', 'upgrade', '-g'])
+            cmd.extend(['npm', 'update', '-g'])
             cmd.extend(opts.npm_packages)
             
             runner.run(opts=opts, cmds=[cmd],

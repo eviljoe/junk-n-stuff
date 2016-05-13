@@ -30,10 +30,10 @@ UPDATERS = [
     initjns.InitJNSUpdater(),
     pip.PipUpdater(),
     pip3.PipUpdater(),
+    npm.NPMUpdater(),
     cabal.CabalUpdater(),
     choco.ChocoUpdater(),
     cygwin.CygwinUpdater(),
-    npm.NPMUpdater(),
     atom.AtomUpdater()
 ]
 
