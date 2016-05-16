@@ -110,8 +110,10 @@ def validate_opts(opts):
 
 
 def sudo(opts, runner):
-    if not jnsos.is_windows() and next((u for u in UPDATERS if u.is_root_required(opts)), None) is not None:
-        runner.run(opts=opts, cmds=[['sudo', 'echo', 'privileges', 'esclated']], title='esclating privileges')
+    os_has_sudo = not (jnsos.is_windows() or jnsos.is_cygwin())
+    
+    if os_has_sudo and next((u for u in UPDATERS if u.is_root_required(opts)), None) is not None:
+        runner.run(opts=opts, cmds=[['sudo', 'echo', 'privileges', 'esclated']])
 
 
 def update(opts, runner):
