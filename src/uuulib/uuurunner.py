@@ -1,6 +1,9 @@
 import itertools
 import shlex
 import subprocess
+import time
+
+from jnscommons import jnsstr
 
 
 class UUURunner:
@@ -8,6 +11,8 @@ class UUURunner:
         self.run_count = 0
     
     def run(self, opts, cmds=None, cwd='.', title=None):
+        start = time.perf_counter()
+        
         if self.run_count > 0:
             print('----------')
         
@@ -16,6 +21,8 @@ class UUURunner:
         
         self.run_count += 1
         self._run_cmds(opts, cmds, cwd)
+        
+        print('finshed update in {}'.format(jnsstr.seconds_to_minutes_and_seconds(time.perf_counter() - start)))
 
     def _run_cmds(self, opts, cmds, cwd='.'):
         exit_code = 0
