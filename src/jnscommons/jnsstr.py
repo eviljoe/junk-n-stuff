@@ -12,8 +12,8 @@ def seconds_to_minutes_and_seconds(seconds):
         else:
             seconds = round(abs(seconds))
             
-            s = seconds % _SECONDS_IN_MINUTE
-            m = (seconds - s) / _SECONDS_IN_MINUTE
+            s = int(seconds % _SECONDS_IN_MINUTE)
+            m = int((seconds - s) / _SECONDS_IN_MINUTE)
             
             string = '{}{}m {}s'.format(negative, m, s) if m > 0 else '{}{}s'.format(negative, s)
     
