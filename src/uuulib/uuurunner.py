@@ -14,15 +14,17 @@ class UUURunner:
         start = time.perf_counter()
         
         if self.run_count > 0:
-            print('----------')
+            print('----------', flush=True)
         
         if title:
-            print(title)
+            print(title, flush=True)
         
         self.run_count += 1
         self._run_cmds(opts, cmds, cwd)
         
-        print('finshed update in {}'.format(jnsstr.seconds_to_minutes_and_seconds(time.perf_counter() - start)))
+        print(
+            'finshed update in {}'.format(jnsstr.seconds_to_minutes_and_seconds(time.perf_counter() - start)),
+            flush=True)
 
     def _run_cmds(self, opts, cmds, cwd='.'):
         exit_code = 0
@@ -34,7 +36,7 @@ class UUURunner:
         exit_code = 0
         
         if opts.verbose:
-            print('{}'.format(' '.join([shlex.quote(token) for token in cmd])))
+            print('{}'.format(' '.join([shlex.quote(token) for token in cmd])), flush=True)
         
         if not opts.dry_run:
             popen = subprocess.Popen(cmd, cwd=cwd)
