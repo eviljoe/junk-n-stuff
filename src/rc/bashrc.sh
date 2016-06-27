@@ -101,6 +101,14 @@ function _create_ps1 {
     export PS1="${ps1}"
 }
 
+function llwhich {
+    ll "$(which "$@")"
+}
+
+function cdwhich {
+    cd "$(dirname "$(which "$@")")" || return 1
+}
+
 function _can_ls_group_dirs_first {
     ls --group-directories-first &>/dev/null
     return $?
