@@ -35,9 +35,10 @@ case "$1" in
     *.zip) unzip -v $1 2>/dev/null         ;;
     
     # Java
-    *.ear) read_java_archive "$1" ;;
-    *.jar) read_java_archive "$1" ;;
-    *.war) read_java_archive "$1" ;;
+    *.ear)   read_java_archive "$1" ;;
+    *.jar)   read_java_archive "$1" ;;
+    *.war)   read_java_archive "$1" ;;
+    *.class) javap -verbose -private -sysinfo -constants "$1" ;;
     
     # ASAR
     *.asar) asar list "$1" ;;
