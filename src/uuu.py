@@ -66,9 +66,7 @@ def parse_args():
     parser.add_argument('--verbose', action='store_true', default=False, dest='verbose',
                         help='Adds more output (default: %(default)s)')
     
-    opts = parser.parse_args()
-    
-    return opts
+    return parser.parse_args()
 
 
 def create_help_epilog():
