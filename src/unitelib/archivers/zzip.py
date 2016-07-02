@@ -1,10 +1,11 @@
 from . import abstractarchiver
 
 
-FILE_EXTENSION = 'zip'
-
-
 class ZipArchiver(abstractarchiver.AbstractArchiver):
+    @classmethod
+    def file_extension(cls):
+        return 'zip'
+    
     def list_contents(self, opts):
         raise NotImplementedError()  # JOE todo
 
@@ -12,4 +13,7 @@ class ZipArchiver(abstractarchiver.AbstractArchiver):
         raise NotImplementedError()  # JOE todo
     
     def create_archive(self, opts):
-        raise NotImplementedError()  # JOE todo
+        cmd = ['zip', '--verbose', '--recurse-paths', opts.dest]
+        cmd.extend(opts.files)
+        
+        return self.run_cmd(opts, cmd)
