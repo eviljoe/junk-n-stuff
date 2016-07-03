@@ -5,6 +5,10 @@ import subprocess
 
 class AbstractArchiver(metaclass=abc.ABCMeta):
     @abc.abstractmethod
+    def get_file_extensions(self):
+        raise NotImplementedError()
+    
+    @abc.abstractmethod
     def list_contents(self, opts):
         raise NotImplementedError()
 

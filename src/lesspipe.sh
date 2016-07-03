@@ -28,6 +28,7 @@ case "$1" in
     *.tar)     tar tvf "$1" 2>/dev/null               ;;
     *.tar.bz2) bzip2 -dc "$1" | tar tvf - 2>/dev/null ;;
     *.tar.gz)  gzip -dc "$1" | tar tvf - 2>/dev/null  ;;
+    *.tgz)     gzip -dc "$1" | tar tvf - 2>/dev/null  ;;
     *.gz)      gzip -lv "$1" 2>/dev/null              ;;
     
     # ZIP

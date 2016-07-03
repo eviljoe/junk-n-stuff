@@ -3,6 +3,7 @@
 
 import argparse
 
+from jnscommons import jnsstr
 from jnscommons import jnsvalid
 
 from unitelib import uniteutils
@@ -15,10 +16,11 @@ def main():
 
 
 def _parse_args():
-    parser = argparse.ArgumentParser(description='Archive in different formats')
+    parser = argparse.ArgumentParser(description='Archive in different formats', epilog=_create_help_epilog(),
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
     
     for archiver in uniteutils.ARCHIVERS:
-        ext = archiver.file_extension()
+        ext = archiver.get_file_extensions()[0]
         parser.add_argument('--{}'.format(ext.replace('.', '-')), action='store_const', const=ext, dest='format',
                             help='Add files to a {} archive'.format(ext))
     
@@ -31,16 +33,19 @@ def _parse_args():
     parser.add_argument('files', nargs='*', metavar='file', default=[],
                         help='The files or directories to be added to the archive')
 
-    # JOE todo add epilog that says that the format is determined in the following order:
-    # 1. last manually specified format (e.g. if both --tar-gz --zip, then zip is used)
-    # 2. determine format from dest_archive file name
-    
     return parser.parse_args()
 
 
+def _create_help_epilog():
+    return jnsstr.wrap_str_array([
+        'The archiving format will be determined by first checking to see if a format is manually specified.  If more '
+        'than one format is manually specified, the last one specified will be used.  If no format is specified, it '
+        'will be determined by checking the specified archive\'s file extension.  If the format cannot be determined '
+        'from the file extension, an error will be thrown.'
+    ])
+
+
 def _validate_opts(opts):
-    # JOE todo make sure a destination is provided
-    # JOE todo make sure at least one file to be archived has been provided
     jnsvalid.validate_all_exist(opts.files)
 
 

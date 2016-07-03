@@ -4,9 +4,9 @@
 import argparse
 import os.path
 import sys
-import textwrap
 
 from jnscommons import jnsos
+from jnscommons import jnsstr
 
 from uuulib import uuuconfig
 from uuulib import uuurunner
@@ -90,7 +90,7 @@ def create_help_epilog():
     e.append(' * Arguments can contain whitespace but cannot start with a whitespace character')
     e.append(' * Whitespace at the end of an argument will be considered to be part of that argument')
     
-    return '\n'.join(['\n'.join(textwrap.wrap(line, width=80)) for line in e])
+    return jnsstr.wrap_str_array(e)
 
 
 def read_config_file(opts):

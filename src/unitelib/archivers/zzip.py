@@ -2,15 +2,14 @@ from . import abstractarchiver
 
 
 class ZipArchiver(abstractarchiver.AbstractArchiver):
-    @classmethod
-    def file_extension(cls):
-        return 'zip'
+    def get_file_extensions(self):
+        return ['zip']
     
     def list_contents(self, opts):
-        raise NotImplementedError()  # JOE todo
+        self.run_cmd(opts, ['unzip', '-v', opts.archive])
 
     def extract_archive(self, opts):
-        raise NotImplementedError()  # JOE todo
+        return self.run_cmd(opts, ['unzip', opts.archive])
     
     def create_archive(self, opts):
         cmd = ['zip', '--verbose', '--recurse-paths', opts.dest]
