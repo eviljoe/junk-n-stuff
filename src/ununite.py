@@ -54,7 +54,7 @@ def _validate_opts(opts):
 def _extract(opts):
     archiver = uniteutils.get_archiver(opts.format, opts.archive)
     
-    if(opts.list):
+    if opts.list:
         archiver.list_contents(opts)
     else:
         archiver.extract_archive(opts)
