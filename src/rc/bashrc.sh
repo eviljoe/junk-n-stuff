@@ -182,8 +182,9 @@ alias df="df -h"
 alias disband="ununite"
 alias du="du -h"
 alias emacs="emacs -nw"
-alias open="xdg-open"
+alias grep="grep --color=auto"
 alias naut="nemo"
+alias open="xdg-open"
 alias path='printf "%s\n" "${PATH}"'
 alias pwdp='pwd -P'
 alias resource="source ~/.bashrc"
