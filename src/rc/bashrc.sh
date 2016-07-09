@@ -143,7 +143,6 @@ add_path ~/bin
 add_path ~/.cabal/bin # location of `shellcheck'
 
 export LESSOPEN="|${HOME}/bin/lesspipe %s"
-export TERM=xterm-256color
 
 # ####### #
 # Aliases #
