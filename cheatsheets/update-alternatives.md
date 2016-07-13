@@ -21,6 +21,7 @@ sudo update-alternatives --install /usr/bin/java java /opt/java/java8/bin/java 1
 sudo update-alternatives --config java
 #(1) (2)                 (3)      (4)
 ```
+
 1.  Root permissions are necessary
 2.  The name of the command.  Try to keep up.
 3.  This will present a list of installed alternatives for you to select
