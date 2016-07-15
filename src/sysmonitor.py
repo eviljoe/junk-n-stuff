@@ -3,9 +3,26 @@
 
 import time
 
+from jnscommons import jnsos
+
 
 def main():
-    print("Mem: {}%, CPU: {}%".format(get_memory_usage(), get_cpu_usage()))
+    mem_usage = get_memory_usage()
+    cpu_usage = get_cpu_usage()
+    
+    print("Mem: {}, CPU: {}".format(
+        '--' if mem_usage is None else str(mem_usage) + '%',
+        '--' if cpu_usage is None else str(cpu_usage) + '%'))
+
+
+########################
+# Validation Functions #
+########################
+
+
+def _validate_os():
+    if not (jnsos.is_linux() or jnsos.is_cygwin()):
+        raise OSError('Unsupported operating system: {}.  Only Linux and Cygwin are supported.')
 
 
 ##########################
@@ -15,28 +32,34 @@ def main():
 
 def get_memory_usage():
     mem_total, mem_available = _read_meminfo()
-    mem_usage = None
+    usage = None
     
     if mem_total and mem_available:
-        mem_usage = (mem_total - mem_available) / mem_total
+        usage = (mem_total - mem_available) / mem_total * 100
     
-    return round(mem_usage * 100)
+    return round(usage) if usage is not None else None
 
 
 def _read_meminfo():
     mem_total = None
-    mem_available = None
+    mem_available = None  # This is not available in Cygwin, so we have to use MemFree instead
+    mem_free = None
     
     with open('/proc/meminfo', 'r') as f:
         line = f.readline()
         
-        while (mem_total is None or mem_available is None) and line is not None:
+        while (mem_total is None or mem_available is None or mem_free is None) and line:
             if line.startswith('MemTotal:'):
                 mem_total = int(line.split()[1])
             elif line.startswith('MemAvailable:'):
                 mem_available = int(line.split()[1])
+            elif line.startswith('MemFree:'):
+                mem_free = int(line.split()[1])
             
             line = f.readline()
+    
+    if not mem_available:
+        mem_available = mem_free
     
     return mem_total, mem_available
 
@@ -48,19 +71,18 @@ def _read_meminfo():
 
 def get_cpu_usage():
     cpu_info_1 = _read_cpu_stat()
-    cpu_info_2 = None
-    delta_idle = None
-    delta_total = None
     usage = None
     
-    time.sleep(0.25)
-    cpu_info_2 = _read_cpu_stat()
+    if cpu_info_1.idle and cpu_info_1.total:
+        time.sleep(0.25)
+        cpu_info_2 = _read_cpu_stat()
+        
+        if cpu_info_2.idle and cpu_info_2.total:
+            delta_idle = cpu_info_2.idle - cpu_info_1.idle
+            delta_total = cpu_info_2.total - cpu_info_1.total
+            usage = (delta_total - delta_idle) / delta_total * 100
     
-    delta_idle = cpu_info_2.idle - cpu_info_1.idle
-    delta_total = cpu_info_2.total - cpu_info_1.total
-    usage = ((delta_total - delta_idle) / delta_total) * 100
-    
-    return round(usage)
+    return round(usage) if usage is not None else None
 
 
 def _read_cpu_stat():
@@ -69,7 +91,7 @@ def _read_cpu_stat():
     with open('/proc/stat', 'r') as f:
         line = f.readline()
         
-        while cpu_info is None and line is not None:
+        while cpu_info is None and line:
             if line.startswith('cpu '):
                 cpu_info = _read_cpu_stat_line(line)
             
@@ -81,15 +103,22 @@ def _read_cpu_stat():
 def _read_cpu_stat_line(line):
     parts = line.split()
     
+    user, system, nice, idle = parts[1:5]
+    
+    if jnsos.is_linux():
+        wait, irq, srq, zero = parts[5:9]
+    else:
+        wait, irq, srq, zero = [0, 0, 0, 0]
+    
     return CPUInfo(
-        user=int(parts[1]),
-        system=int(parts[2]),
-        nice=int(parts[3]),
-        idle=int(parts[4]),
-        wait=int(parts[5]),
-        irq=int(parts[6]),
-        srq=int(parts[7]),
-        zero=int(parts[8]))
+        user=int(user),
+        system=int(system),
+        nice=int(nice),
+        idle=int(idle),
+        wait=int(wait),
+        irq=int(irq),
+        srq=int(srq),
+        zero=int(zero))
 
 
 ###########
