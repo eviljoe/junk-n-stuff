@@ -12,6 +12,9 @@ from jnscommons import jnsos
 from jnscommons import jnsvalid
 
 
+KEY_BY_MOD_TIME = 'latest-by-mod-time'
+KEY_BY_NAME = 'latest-by-name'
+
 OPEN_COMMANDS = {
     jnsos.OS_PREFIX_LINUX: ['xdg-open'],
     jnsos.OS_PREFIX_CYGWIN: ['cygstart'],
@@ -23,7 +26,7 @@ OPEN_COMMANDS = {
 def main():
     opts = parse_args()
     validate_opts(opts)
-    latest = get_latest_file(opts.directories, opts.include_hidden)
+    latest = get_latest_file(opts.directories, opts.include_hidden, opts.key)
     
     if latest is None:
         print('No latest file.', file=sys.stderr)
@@ -44,11 +47,16 @@ def parse_args():
                         '(default:  %(default)s)')
     parser.add_argument('-H', '--include-hidden', action='store_true', default=False, dest='include_hidden',
                         help='Include hidden files when looking for the last modified one (default:  %(default)s)')
+    parser.add_argument('-m', '--mtime', action='store_const', const=KEY_BY_MOD_TIME, dest='key',
+                        help="find the latest using each file's modification time (default)")
+    parser.add_argument('-n', '--name', action='store_const', const=KEY_BY_NAME, dest='key',
+                        help="find the latest using each file's basename (case insensitive)")
     parser.add_argument('-o', '--os', action='store', default=get_default_os(), metavar='OS', dest='os',
                         help='Specify the operating system.  Can only be used during dry runs. (default:  %(default)s)')
     
     opts = parser.parse_args()
     opts.directories = set([os.getcwd()]) if not opts.directories else set(opts.directories)
+    opts.key = KEY_BY_MOD_TIME if not opts.key else opts.key
     
     return opts
 
@@ -60,8 +68,15 @@ def validate_opts(opts):
         raise NotDryRunError('Cannot specify an OS unless performing a dry run.')
 
 
-def get_latest_file(directories, include_hidden):
-    return max(get_files_in_directories(directories, include_hidden), key=os.path.getmtime, default=None)
+def get_latest_file(directories, include_hidden, key):
+    if key == KEY_BY_MOD_TIME:
+        key_fn = os.path.getmtime
+    elif key == KEY_BY_NAME:
+        key_fn = get_lower_basename
+    else:
+        raise UnsupportedKeyError('Could not the latest file for unsupported key: {}'.format(key))
+    
+    return max(get_files_in_directories(directories, include_hidden), key=key_fn, default=None)
 
 
 def get_files_in_directories(directories, include_hidden):
@@ -79,6 +94,10 @@ def should_check_file(file_name, include_hidden):
     return check
 
 
+def get_lower_basename(file):
+    return os.path.basename(file).lower()
+
+
 def get_os(opts):
     return get_default_os() if opts.os is None or len(opts.os) == 0 else opts.os
 
@@ -89,7 +108,7 @@ def get_default_os():
 
 def open_file(opts, file_name):
     op_sys = get_os(opts)
-    open_cmd = get_open_command_list(op_sys)
+    open_cmd = get_open_command(op_sys)
     
     if open_cmd is None:
         raise UnsupportedOSError('Could not determine how to open a file for unsupported OS: {}'.format(op_sys))
@@ -97,7 +116,7 @@ def open_file(opts, file_name):
         start_open_file_subprocess(opts, open_cmd, file_name)
     
 
-def get_open_command_list(op_sys):
+def get_open_command(op_sys):
     key = next((k for k in OPEN_COMMANDS.keys() if jnsos.is_os(k, os=op_sys)), None)
     return None if key is None else OPEN_COMMANDS[key]
 
@@ -114,7 +133,16 @@ def get_shell_command(parts):
     return '' if parts is None else ' '.join([shlex.quote(part) for part in parts])
 
 
+##########
+# Errors #
+##########
+
+
 class UnsupportedOSError(Exception):
+    pass
+
+
+class UnsupportedKeyError(Exception):
     pass
 
 
