@@ -85,7 +85,7 @@ Version: ${VERSION}
 
 Usage: ${base_name} [options]
 Options:
-  -c: Clone repo junk-n-stuff repo. (default: no)
+  -c: Clone the junk-n-stuff repo. (default: no)
   -d: Do a dry run.  Do not actually perform any actions. (default: no)
   -g: Git home directory.  (default: ${DEF_GIT_HOME})
   -h: Print this help message and exit
