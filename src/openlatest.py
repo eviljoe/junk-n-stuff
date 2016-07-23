@@ -12,6 +12,9 @@ from jnscommons import jnsos
 from jnscommons import jnsvalid
 
 
+# The index in the output of the Windows `attrib' command that will contain an 'H' if a file is hidden.
+WIN_HIDDEN_ATTR_INDEX = 4
+
 KEY_BY_MOD_TIME = 'latest-by-mod-time'
 KEY_BY_NAME = 'latest-by-name'
 
@@ -89,9 +92,44 @@ def get_files_in_directories(directories, include_hidden):
 
 
 def should_check_file(file_name, include_hidden):
-    check = True if include_hidden else not os.path.basename(file_name)[0] == '.'
+    check = True if include_hidden else not is_file_hidden(file_name)
     check = check and os.path.isfile(file_name)
     return check
+
+
+def is_file_hidden(file_name):
+    if jnsos.is_windows():
+        hidden = is_file_hidden_windows(file_name)
+    elif jnsos.is_cygwin():
+        hidden = is_file_hidden_cygwin(file_name)
+    else:
+        hidden = is_file_hidden_linux(file_name)
+
+    return hidden
+
+
+def is_file_hidden_linux(file_name):
+    return os.path.basename(file_name)[0] == '.'
+
+
+def is_file_hidden_cygwin(file_name):
+    # Determines if a file in Cygwin is hidden.  This function is EXTREMELY slow because it has to first create a
+    # subprocess to convert the Linux file path to a Windows file path.  It then has to call the already slow function
+    # to check if a Windows file is hidden.
+    hidden = is_file_hidden_linux(file_name)
+
+    if not hidden:
+        win_path = subprocess.check_output(['cygpath', '-w', file_name]).decode().strip()
+        hidden = is_file_hidden_windows(win_path)
+
+    return hidden
+
+
+def is_file_hidden_windows(file_name):
+    # Determines if a file in Windows is hidden.  This function is very slow because it has to create a new subprocess
+    # for each file.
+    output = subprocess.check_output(['attrib', file_name]).decode()
+    return output[WIN_HIDDEN_ATTR_INDEX] == 'H'
 
 
 def get_lower_basename(file):
