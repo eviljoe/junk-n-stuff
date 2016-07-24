@@ -95,7 +95,7 @@ function _create_ps1 {
     ps1="${ps1}\[\e[31m\]"               # make exit code red
     ps1="${ps1}\`print_last_exit_code\`" # last exit code
     ps1="${ps1}\[\e[m\]"                 # clear exit code color
-    ps1="${ps1}\$"                       # dollar sign (#).  pound (#) when root
+    ps1="${ps1}\$"                       # dollar sign ($).  pound (#) when root
     ps1="${ps1} "                        # space ( )
     
     export PS1="${ps1}"
@@ -143,6 +143,7 @@ add_path ~/bin
 add_path ~/.cabal/bin # location of `shellcheck'
 
 export LESSOPEN="|${HOME}/bin/lesspipe %s"
+export HISTCONTROL="ignoreboth" # Ignore adjacent duplicate lines and lines that start with a space
 
 # ####### #
 # Aliases #
