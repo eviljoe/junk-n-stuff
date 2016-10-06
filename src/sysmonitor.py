@@ -7,6 +7,7 @@ from jnscommons import jnsos
 
 
 def main():
+    _validate_os()
     mem_usage = get_memory_usage()
     cpu_usage = get_cpu_usage()
     
