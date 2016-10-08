@@ -209,6 +209,11 @@ if [[ "$(str_lower "${TERM}")" == "cygwin" ]]; then
     alias cls="tput reset && echo"
 fi
 
+# When in tmux, `tput reset' acts like `clear'.
+if [[ -n "${TMUX}" ]]; then
+    alias cls="tput reset && tmux clear-history"
+fi
+
 # ######## #
 # Clean Up #
 # ######## #
