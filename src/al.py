@@ -7,6 +7,7 @@ import os.path
 import re
 
 from jnscommons import jnsvalid
+from jnscommons import jnsos
 
 
 ########
@@ -36,6 +37,8 @@ def _parse_args():
                         help='The directory that contains the logs to be archived', required=True)
     parser.add_argument('--pattern', '-p', action='store', default=None, metavar='regex', dest='pattern',
                         help='A pattern matching the files that should be archived')
+    parser.add_argument('--pattern-exclude', '-P', action='store', default=None, metavar='regex',
+                        dest='pattern_exclude', help='A pattern matching the files that should not be archived')
     parser.add_argument('--ssh', '-s', action='store', default=None, metavar='host', dest='ssh',
                         help='The ssh host that the archive commands should be executed on')
     parser.add_argument('--verbose', action='store_true', default=False, dest='verbose',
@@ -48,9 +51,15 @@ def _parse_args():
 
 
 def _validate_opts(opts):
-    if not opts.ssh:
+    if opts.ssh:
+        if jnsos.is_windows():
+            raise NoSSHForOSError('The current OS does not support SSH: {}'.format(jnsos.OS))
+    else:
         jnsvalid.validate_is_directory(opts.log_dir)
         jnsvalid.validate_is_directory(opts.archive_dir)
+    
+    if opts.pattern and opts.pattern_exclude:
+        raise BothPatternsError('Cannot specify both --pattern and --pattern-exclude.')
     
     full_archive_dir = os.path.join(opts.archive_dir, opts.archive_subdir)
     if os.path.exists(full_archive_dir) and not os.path.isdir(full_archive_dir):
@@ -76,24 +85,40 @@ def _archive_logs(opts):
         _archive_logs_local(opts)
 
 
+def _file_matches_patterns(file_name, regex, regex_exclude):
+    matches = True
+    
+    if regex:
+        matches = regex.match(file_name)
+    elif regex_exclude:
+        matches = not regex_exclude.match(file_name)
+    
+    return matches
+
+
 #############################
 # Local Archiving Functions #
 #############################
 
 
-def _should_archive_local_file(file_dir, file_name, pattern):
+def _should_archive_local_file(file_dir, file_name, regex, regex_exclude):
     full_file = os.path.join(file_dir, file_name)
-    matches_pattern = pattern.match(file_name) if pattern else True
-    return matches_pattern and os.path.isfile(full_file) and not os.path.islink(full_file)
+    
+    return (
+        _file_matches_patterns(file_name, regex, regex_exclude) and
+        os.path.isfile(full_file) and
+        not os.path.islink(full_file)
+    )
 
 
 def _archive_logs_local(opts):
-    pattern = re.compile(opts.pattern) if opts.pattern else None
+    regex = re.compile(opts.pattern) if opts.pattern else None
+    regex_exclude = re.compile(opts.pattern_exclude) if opts.pattern_exclude else None
     archive_dir = os.path.join(opts.archive_dir, opts.archive_subdir)
     first = True
     
     for file_name in os.listdir(opts.log_dir):
-        if _should_archive_local_file(opts.log_dir, file_name, pattern):
+        if _should_archive_local_file(opts.log_dir, file_name, regex, regex_exclude):
             if first:
                 _create_full_archive_dir(opts, archive_dir)
                 first = False
@@ -133,7 +158,15 @@ def _archive_logs_ssh(opts):
 ##########
 
 
+class BothPatternsError(Exception):
+    pass
+
+
 class ArchiveSubdirIsNotDirError(Exception):
+    pass
+
+
+class NoSSHForOSError(Exception):
     pass
 
 

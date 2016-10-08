@@ -189,6 +189,7 @@ function make_symbolic_links {
     
     # Scripts
     printf "> creating executable symbolic links\n"
+    make_symbolic_link "${jns_src_dir}/al.py" "${home_bin_dir}/al"
     make_symbolic_link "${jns_src_dir}/alpha.py" "${home_bin_dir}/alpha"
     make_symbolic_link "${jns_src_dir}/fnd.sh" "${home_bin_dir}/fnd"
     make_symbolic_link "${jns_src_dir}/init-jns.sh" "${home_bin_dir}/init-jns"
