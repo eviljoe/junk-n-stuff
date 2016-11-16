@@ -2,7 +2,7 @@
 
 set -e # fail on any errors
 
-readonly VERSION="1.1.0"
+readonly VERSION="1.2.0"
 readonly DEF_GIT_HOME="${HOME}/Documents/git"
 readonly DEF_OS="$(uname -o)"
 readonly CLONE_REPO_URL="https://github.com/eviljoe/junk-n-stuff.git"
@@ -15,7 +15,7 @@ readonly ERR_NEED_DRY_RUN=6
 opt_clone_repo=0
 opt_print_help=0
 opt_dry_run=0
-opt_git_home="${DEF_GIT_HOME}"
+opt_git_home=""
 opt_user_home="${HOME}"
 opt_os="${DEF_OS}"
 opt_override_symlinks=0
@@ -103,6 +103,10 @@ Notes:
       > Informational Message
       E Already Exists
       R Replaced
+  * The Git home directory will be determined using these steps.  If it is found, the subsequent steps will be ignored.
+      1. Use the value of the \`-g' option
+      2. Use the value of the \`JNS_GIT_HOME' environment variable
+      3. Use the default directory: ${DEF_GIT_HOME}
 EOF
 }
 
@@ -127,12 +131,27 @@ function exec_cmd {
     fi
 }
 
+function get_git_home {
+    local git_home
+    
+    if [[ -n "${opt_git_home}" ]]; then
+        git_home="${opt_git_home}"
+    elif [[ -n "${JNS_GIT_HOME}" ]]; then
+        git_home="${JNS_GIT_HOME}"
+    else
+        git_home="${DEF_GIT_HOME}"
+    fi
+    
+    printf "%s" "${git_home}"
+}
+
 function clone_repo {
     local err; err=0;
+    local git_home; git_home="$(get_git_home)"
     
-    if [[ ! -e "${opt_git_home}" ]]; then
-        exec_cmd mkdir -p "${opt_git_home}"
-    elif [[ ! -d "${opt_git_home}" ]]; then
+    if [[ ! -e "${git_home}" ]]; then
+        exec_cmd mkdir -p "${git_home}"
+    elif [[ ! -d "${git_home}" ]]; then
         err=${ERR_GIT_HOME_NOT_DIR}
     fi
     
@@ -175,7 +194,7 @@ EOF
 }
 
 function make_symbolic_links {
-    local jns_src_dir; jns_src_dir="${opt_git_home}/junk-n-stuff/src"
+    local jns_src_dir; jns_src_dir="$(get_git_home)/junk-n-stuff/src"
     local home_bin_dir; home_bin_dir="${opt_user_home}/bin"
     
     make_os_symbolic_links
