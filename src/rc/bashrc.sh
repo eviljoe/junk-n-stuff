@@ -162,6 +162,7 @@ alias docs="cd ~/Documents"
 
 # less
 alias less="less -iRP '?f%f:<stdin>.?m (%i of %m)., %lb of %L (%Pb\\%)'"
+alias les="less -S"
 alias lgs="less +G -S"
 
 # ls
