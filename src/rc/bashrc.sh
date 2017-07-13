@@ -6,6 +6,10 @@ _bashrc_os="$(uname -o | tr "[:upper:]" "[:lower:]")"
 # Functions #
 # ######### #
 
+function path {
+    printf "%s" "${PATH}" | sed "s/:/\n/g"
+}
+
 function add_path {
     local new_path; new_path="$1"
     local place; place="$2"
@@ -186,7 +190,6 @@ alias emacs="emacs -nw"
 alias grep="grep --color=auto"
 alias naut="nemo"
 alias open="xdg-open"
-alias path='printf "%s\n" "${PATH}"'
 alias pwdp='pwd -P'
 alias resource="source ~/.bashrc"
 alias volume="pavucontrol"
