@@ -58,7 +58,7 @@ function validate_input() {
 function print_char_count() {
     local word; word="$1"
     local print_word; print_word="$2"
-    local count; count="$(printf "%s" "${word}" | wc -c | xargs)"
+    local count; count="$(printf "%s" "${word}" | wc --chars | xargs)"
     
     printf "%s" "${count}"
     
