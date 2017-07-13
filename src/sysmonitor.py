@@ -110,7 +110,7 @@ def get_cpu_usage():
 
     # If we have all the information needed to calculate the CPU usage
     else:
-        delta_total = cpu_info_new.total - cpu_info_old.total
+        delta_total = abs(cpu_info_new.total - cpu_info_old.total)
 
         # Too little time has passed between readings
         if delta_total < CPU_STAT_MIN_TIME:
