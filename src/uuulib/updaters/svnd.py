@@ -32,4 +32,4 @@ class SVNDUpdater(abstractupdater.AbstractRepoDirUpdater):
         return 'svn'
     
     def get_update_cmd(self):
-        return ['svn', 'update']
+        return ['svn', 'update', '--non-interactive']

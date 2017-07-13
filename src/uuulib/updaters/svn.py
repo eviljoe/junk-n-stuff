@@ -29,4 +29,4 @@ class SVNUpdater(abstractupdater.AbstractRepoUpdater):
         return opts.svn_dirs
 
     def get_update_cmd(self):
-        return ['svn', 'update']
+        return ['svn', 'update', '--non-interactive']
