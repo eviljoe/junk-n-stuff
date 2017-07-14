@@ -20,7 +20,7 @@ def validate_is_files(files):
 def validate_is_file(f):
     validate_exists(f)
     if not os.path.isfile(f):
-        raise NotADirectoryError('File is not a file: {}'.format(f))
+        raise FileNotFoundError('File is not a file: {}'.format(f))
 
 
 def validate_all_exist(files):
