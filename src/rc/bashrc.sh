@@ -218,6 +218,12 @@ if [[ -n "${TMUX}" ]]; then
     alias cls="tput reset && tmux clear-history"
 fi
 
+#################
+# Other Sources #
+#################
+
+source ~/.tmux-functions.sh
+
 # ######## #
 # Clean Up #
 # ######## #
