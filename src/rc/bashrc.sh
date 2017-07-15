@@ -144,6 +144,7 @@ fi
 _create_ps1
 
 add_path ~/bin
+add_path ~/bin/lib
 add_path ~/.cabal/bin # location of `shellcheck'
 
 export LESSOPEN="|${HOME}/bin/lesspipe %s"
@@ -217,12 +218,6 @@ fi
 if [[ -n "${TMUX}" ]]; then
     alias cls="tput reset && tmux clear-history"
 fi
-
-#################
-# Other Sources #
-#################
-
-source ~/.tmux-functions.sh
 
 # ######## #
 # Clean Up #

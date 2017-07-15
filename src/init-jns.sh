@@ -35,6 +35,7 @@ function main {
             fi
             
             make_home_bin_dir
+            make_home_bin_lib_dir
             make_bashrc
             make_symbolic_links
         fi
@@ -175,6 +176,17 @@ function make_home_bin_dir {
     fi
 }
 
+function make_home_bin_lib_dir {
+    local home_bin_lib_dir; home_bin_lib_dir="${opt_user_home}/bin/lib"
+    
+    if [[ -e "${home_bin_lib_dir}" ]]; then
+        printf "E mkdir %s\n" "${home_bin_lib_dir}"
+    else
+        printf "+ "
+        exec_cmd mkdir "${home_bin_lib_dir}"
+    fi
+}
+
 function make_bashrc {
     local bashrc_file; bashrc_file="${opt_user_home}/.bashrc"
     
@@ -201,32 +213,44 @@ function make_symbolic_links {
     
     # RC
     printf "> creating RC symbolic links\n"
-    make_symbolic_link "${jns_src_dir}/rc/bashrc.sh" "${opt_user_home}/.bashrc-common"
-    make_symbolic_link "${jns_src_dir}/rc/inputrc" "${opt_user_home}/.inputrc"
-    make_symbolic_link "${jns_src_dir}/rc/tmux.conf" "${opt_user_home}/.tmux.conf"
-    make_symbolic_link "${jns_src_dir}/rc/tmux.conf.8color" "${opt_user_home}/.tmux.conf.8color"
+    make_symbolic_link "${jns_src_dir}/rc/bashrc.sh"          "${opt_user_home}/.bashrc-common"
+    make_symbolic_link "${jns_src_dir}/rc/inputrc"            "${opt_user_home}/.inputrc"
+    make_symbolic_link "${jns_src_dir}/rc/tmux.conf"          "${opt_user_home}/.tmux.conf"
+    make_symbolic_link "${jns_src_dir}/rc/tmux.conf.8color"   "${opt_user_home}/.tmux.conf.8color"
     make_symbolic_link "${jns_src_dir}/rc/tmux.conf.256color" "${opt_user_home}/.tmux.conf.256color"
-    make_symbolic_link "${jns_src_dir}/rc/tmux-functions.sh" "${opt_user_home}/.tmux-functions.sh"
-    make_symbolic_link "${jns_src_dir}/rc/vimrc" "${opt_user_home}/.vimrc"
+    make_symbolic_link "${jns_src_dir}/rc/tmux-functions.sh"  "${opt_user_home}/.tmux-functions.sh"
+    make_symbolic_link "${jns_src_dir}/rc/vimrc"              "${opt_user_home}/.vimrc"
     
     # Scripts
-    printf "> creating executable symbolic links\n"
-    make_symbolic_link "${jns_src_dir}/al.py" "${home_bin_dir}/al"
-    make_symbolic_link "${jns_src_dir}/alpha.py" "${home_bin_dir}/alpha"
-    make_symbolic_link "${jns_src_dir}/fnd.sh" "${home_bin_dir}/fnd"
-    make_symbolic_link "${jns_src_dir}/init-jns.sh" "${home_bin_dir}/init-jns"
-    make_symbolic_link "${jns_src_dir}/kalp.py" "${home_bin_dir}/kalp"
-    make_symbolic_link "${jns_src_dir}/lesspipe.sh" "${home_bin_dir}/lesspipe"
+    printf "> creating executable symbolic links - user commands\n"
+    make_symbolic_link "${jns_src_dir}/al.py"           "${home_bin_dir}/al"
+    make_symbolic_link "${jns_src_dir}/alpha.py"        "${home_bin_dir}/alpha"
+    make_symbolic_link "${jns_src_dir}/fnd.sh"          "${home_bin_dir}/fnd"
+    make_symbolic_link "${jns_src_dir}/init-jns.sh"     "${home_bin_dir}/init-jns"
+    make_symbolic_link "${jns_src_dir}/kalp.py"         "${home_bin_dir}/kalp"
+    make_symbolic_link "${jns_src_dir}/lesspipe.sh"     "${home_bin_dir}/lesspipe"
     make_symbolic_link "${jns_src_dir}/murmur-start.sh" "${home_bin_dir}/murmur-start"
-    make_symbolic_link "${jns_src_dir}/openlatest.py" "${home_bin_dir}/openlatest"
-    make_symbolic_link "${jns_src_dir}/psgrep.sh" "${home_bin_dir}/psgrep"
+    make_symbolic_link "${jns_src_dir}/openlatest.py"   "${home_bin_dir}/openlatest"
+    make_symbolic_link "${jns_src_dir}/psgrep.sh"       "${home_bin_dir}/psgrep"
     make_symbolic_link "${jns_src_dir}/random-ascii.sh" "${home_bin_dir}/random-ascii"
-    make_symbolic_link "${jns_src_dir}/strindexof.py" "${home_bin_dir}/strindexof"
-    make_symbolic_link "${jns_src_dir}/strlen.sh" "${home_bin_dir}/strlen"
-    make_symbolic_link "${jns_src_dir}/sysmonitor.py" "${home_bin_dir}/sysmonitor"
-    make_symbolic_link "${jns_src_dir}/unite.py" "${home_bin_dir}/unite"
-    make_symbolic_link "${jns_src_dir}/ununite.py" "${home_bin_dir}/ununite"
-    make_symbolic_link "${jns_src_dir}/uuu.py" "${home_bin_dir}/uuu"
+    make_symbolic_link "${jns_src_dir}/strindexof.py"   "${home_bin_dir}/strindexof"
+    make_symbolic_link "${jns_src_dir}/strlen.sh"       "${home_bin_dir}/strlen"
+    make_symbolic_link "${jns_src_dir}/sysmonitor.py"   "${home_bin_dir}/sysmonitor"
+    make_symbolic_link "${jns_src_dir}/unite.py"        "${home_bin_dir}/unite"
+    make_symbolic_link "${jns_src_dir}/ununite.py"      "${home_bin_dir}/ununite"
+    make_symbolic_link "${jns_src_dir}/uuu.py"          "${home_bin_dir}/uuu"
+    
+    # Lib Scripts - tmux
+    printf "> creating executable symbolic links - lib/tmux\n"
+    make_symbolic_link "${jns_src_dir}/tmux/_get_tmux_major_version.sh"      "${home_bin_dir}/lib/_get_tmux_major_version"
+    make_symbolic_link "${jns_src_dir}/tmux/_get_tmux_minor_version.sh"      "${home_bin_dir}/lib/_get_tmux_minor_version"
+    make_symbolic_link "${jns_src_dir}/tmux/_get_tmux_version.sh"            "${home_bin_dir}/lib/_get_tmux_version"
+    make_symbolic_link "${jns_src_dir}/tmux/_is_tmux_in_cygwin.sh"           "${home_bin_dir}/lib/_is_tmux_in_cygwin"
+    make_symbolic_link "${jns_src_dir}/tmux/_is_tmux_in_linux_with_xclip.sh" "${home_bin_dir}/lib/_is_tmux_in_linux_with_xclip"
+    make_symbolic_link "${jns_src_dir}/tmux/_is_tmux_v1.sh"                  "${home_bin_dir}/lib/_is_tmux_v1"
+    make_symbolic_link "${jns_src_dir}/tmux/_is_tmux_v2_0__2_3m.sh"          "${home_bin_dir}/lib/_is_tmux_v2_0__2_3m"
+    make_symbolic_link "${jns_src_dir}/tmux/_is_tmux_v2_4p.sh"               "${home_bin_dir}/lib/_is_tmux_v2_4p"
+    make_symbolic_link "${jns_src_dir}/tmux/_is_tmux_v2.sh"                  "${home_bin_dir}/lib/_is_tmux_v2"
 }
 
 function make_os_symbolic_links {
@@ -235,7 +259,7 @@ function make_os_symbolic_links {
     if [[ "${oslc}" == "gnu/linux" || "${oslc}" == "linux" ]]; then
         printf "> creating OS specific symbolic links for %s\n" "${opt_os}"
         make_symbolic_link "${opt_user_home}/Documents" "${opt_user_home}/docs"
-        make_symbolic_link "${opt_user_home}/Desktop" "${opt_user_home}/desktop"
+        make_symbolic_link "${opt_user_home}/Desktop"   "${opt_user_home}/desktop"
     elif [[ "${oslc}" == "cygwin" ]]; then
         local winhome
         
@@ -250,10 +274,10 @@ function make_os_symbolic_links {
             winhome="/cygdrive/c/Users/${USER}"
         fi
         
-        make_symbolic_link "${winhome}" "${opt_user_home}/winhome"
+        make_symbolic_link "${winhome}"           "${opt_user_home}/winhome"
         make_symbolic_link "${winhome}/Documents" "${opt_user_home}/Documents"
         make_symbolic_link "${winhome}/Documents" "${opt_user_home}/docs"
-        make_symbolic_link "${winhome}/Desktop" "${opt_user_home}/desktop"
+        make_symbolic_link "${winhome}/Desktop"   "${opt_user_home}/desktop"
     else
         printf "> cannot create OS specific symbolic links unknown OS, %s\n" "${opt_os}"
     fi
