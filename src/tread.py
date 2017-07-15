@@ -188,6 +188,7 @@ def _validate_vpn_spec(vpn_spec):
 def _try_connections(vpn_specs):
     connected = False
     
+    # TODO try all connections at the same priority in a random order
     for vpn_spec in sorted(vpn_specs, key=lambda vs: vs.priority):
         print(vpn_spec.file_path)  # TODO try to connect instead of just printing this
     

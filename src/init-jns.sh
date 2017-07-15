@@ -236,8 +236,10 @@ function make_symbolic_links {
     make_symbolic_link "${jns_src_dir}/strindexof.py"   "${home_bin_dir}/strindexof"
     make_symbolic_link "${jns_src_dir}/strlen.sh"       "${home_bin_dir}/strlen"
     make_symbolic_link "${jns_src_dir}/sysmonitor.py"   "${home_bin_dir}/sysmonitor"
+    make_symbolic_link "${jns_src_dir}/tread.py"        "${home_bin_dir}/tread"
     make_symbolic_link "${jns_src_dir}/unite.py"        "${home_bin_dir}/unite"
     make_symbolic_link "${jns_src_dir}/ununite.py"      "${home_bin_dir}/ununite"
+    make_symbolic_link "${jns_src_dir}/uuu.py"          "${home_bin_dir}/uuu"
     make_symbolic_link "${jns_src_dir}/uuu.py"          "${home_bin_dir}/uuu"
     
     # Lib Scripts - tmux
