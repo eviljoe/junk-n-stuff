@@ -229,6 +229,7 @@ function make_symbolic_links {
     make_symbolic_link "${jns_src_dir}/init-jns.sh"     "${home_bin_dir}/init-jns"
     make_symbolic_link "${jns_src_dir}/kalp.py"         "${home_bin_dir}/kalp"
     make_symbolic_link "${jns_src_dir}/lesspipe.sh"     "${home_bin_dir}/lesspipe"
+    make_symbolic_link "${jns_src_dir}/mtcopy.py"       "${home_bin_dir}/mtcopy"
     make_symbolic_link "${jns_src_dir}/murmur-start.sh" "${home_bin_dir}/murmur-start"
     make_symbolic_link "${jns_src_dir}/openlatest.py"   "${home_bin_dir}/openlatest"
     make_symbolic_link "${jns_src_dir}/psgrep.sh"       "${home_bin_dir}/psgrep"
