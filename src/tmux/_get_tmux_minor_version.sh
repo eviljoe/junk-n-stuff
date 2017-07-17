@@ -9,3 +9,4 @@ if [[ ${second_dot_index} == "-1" ]]; then
 else
     printf "%s\n" "${full_version:$((first_dot_index + 1)):$((second_dot_index - first_dot_index - 1))}"
 fi
+
