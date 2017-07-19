@@ -245,15 +245,15 @@ function make_symbolic_links {
     
     # Lib Scripts - tmux
     printf "> creating executable symbolic links - lib/tmux\n"
-    make_symbolic_link "${jns_src_dir}/tmux/_get_tmux_major_version.sh"      "${home_bin_dir}/lib/_get_tmux_major_version"
-    make_symbolic_link "${jns_src_dir}/tmux/_get_tmux_minor_version.sh"      "${home_bin_dir}/lib/_get_tmux_minor_version"
-    make_symbolic_link "${jns_src_dir}/tmux/_get_tmux_version.sh"            "${home_bin_dir}/lib/_get_tmux_version"
-    make_symbolic_link "${jns_src_dir}/tmux/_is_tmux_in_cygwin.sh"           "${home_bin_dir}/lib/_is_tmux_in_cygwin"
-    make_symbolic_link "${jns_src_dir}/tmux/_is_tmux_in_linux_with_xclip.sh" "${home_bin_dir}/lib/_is_tmux_in_linux_with_xclip"
-    make_symbolic_link "${jns_src_dir}/tmux/_is_tmux_v1.sh"                  "${home_bin_dir}/lib/_is_tmux_v1"
-    make_symbolic_link "${jns_src_dir}/tmux/_is_tmux_v2_0__2_3m.sh"          "${home_bin_dir}/lib/_is_tmux_v2_0__2_3m"
-    make_symbolic_link "${jns_src_dir}/tmux/_is_tmux_v2_4p.sh"               "${home_bin_dir}/lib/_is_tmux_v2_4p"
-    make_symbolic_link "${jns_src_dir}/tmux/_is_tmux_v2.sh"                  "${home_bin_dir}/lib/_is_tmux_v2"
+    make_symbolic_link "${jns_src_dir}/tmuxlib/_get_tmux_major_version.sh"      "${home_bin_dir}/lib/_get_tmux_major_version"
+    make_symbolic_link "${jns_src_dir}/tmuxlib/_get_tmux_minor_version.sh"      "${home_bin_dir}/lib/_get_tmux_minor_version"
+    make_symbolic_link "${jns_src_dir}/tmuxlib/_get_tmux_version.sh"            "${home_bin_dir}/lib/_get_tmux_version"
+    make_symbolic_link "${jns_src_dir}/tmuxlib/_is_tmux_in_cygwin.sh"           "${home_bin_dir}/lib/_is_tmux_in_cygwin"
+    make_symbolic_link "${jns_src_dir}/tmuxlib/_is_tmux_in_linux_with_xclip.sh" "${home_bin_dir}/lib/_is_tmux_in_linux_with_xclip"
+    make_symbolic_link "${jns_src_dir}/tmuxlib/_is_tmux_v1.sh"                  "${home_bin_dir}/lib/_is_tmux_v1"
+    make_symbolic_link "${jns_src_dir}/tmuxlib/_is_tmux_v2_0__2_3m.sh"          "${home_bin_dir}/lib/_is_tmux_v2_0__2_3m"
+    make_symbolic_link "${jns_src_dir}/tmuxlib/_is_tmux_v2_4p.sh"               "${home_bin_dir}/lib/_is_tmux_v2_4p"
+    make_symbolic_link "${jns_src_dir}/tmuxlib/_is_tmux_v2.sh"                  "${home_bin_dir}/lib/_is_tmux_v2"
 }
 
 function make_os_symbolic_links {
