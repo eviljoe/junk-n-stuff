@@ -1,0 +1,2 @@
+; Set emacs to always follow symbolic links instead of prompting about it when one is opened
+(setq vc-follow-symlinks t)

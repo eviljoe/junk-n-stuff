@@ -214,6 +214,7 @@ function make_symbolic_links {
     # RC
     printf "> creating RC symbolic links\n"
     make_symbolic_link "${jns_src_dir}/rc/bashrc.sh"          "${opt_user_home}/.bashrc-common"
+    make_symbolic_link "${jns_src_dir}/rc/emacs"            "${opt_user_home}/.emacs"
     make_symbolic_link "${jns_src_dir}/rc/inputrc"            "${opt_user_home}/.inputrc"
     make_symbolic_link "${jns_src_dir}/rc/tmux.conf"          "${opt_user_home}/.tmux.conf"
     make_symbolic_link "${jns_src_dir}/rc/tmux.conf.8color"   "${opt_user_home}/.tmux.conf.8color"
@@ -240,7 +241,6 @@ function make_symbolic_links {
     make_symbolic_link "${jns_src_dir}/tread.py"        "${home_bin_dir}/tread"
     make_symbolic_link "${jns_src_dir}/unite.py"        "${home_bin_dir}/unite"
     make_symbolic_link "${jns_src_dir}/ununite.py"      "${home_bin_dir}/ununite"
-    make_symbolic_link "${jns_src_dir}/uuu.py"          "${home_bin_dir}/uuu"
     make_symbolic_link "${jns_src_dir}/uuu.py"          "${home_bin_dir}/uuu"
     
     # Lib Scripts - tmux
