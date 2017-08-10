@@ -2,7 +2,7 @@
 :syntax on
 
 " Set the color scheme
-:if $TERM != 'cygwin'
+:if $TERM != 'cygwin' && !empty(glob('~/.vim/colors/monokai.vim'))
 :  colorscheme monokai
 :endif
 
