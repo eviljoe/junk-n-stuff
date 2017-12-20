@@ -47,6 +47,18 @@ function str_lower {
     printf "%s" "$1" | tr "[:upper:]" "[:lower:]"
 }
 
+function _is_interactive {
+    local interactive;
+
+    case "$-" in
+        *i*) interactive=0 ;;
+        *) interactive=1 ;;
+    esac
+
+    return ${interactive}
+}
+
+
 # this algorithm is from here: http://unix.stackexchange.com/a/9607
 function _is_in_ssh {
     local in_ssh; in_ssh=1
