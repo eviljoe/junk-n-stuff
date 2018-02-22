@@ -22,10 +22,10 @@ opt_override_symlinks=0
 
 function main {
     local err; err=0
-    
+
     parse_opts "$@"
     err=$?
-    
+
     if [[ "${err}" == "0" ]]; then
         if [[ "${opt_print_help}" == "1" ]]; then
             print_help "$@"
@@ -33,7 +33,7 @@ function main {
             if [[ "${opt_clone_repo}" == "1" ]]; then
                 clone_repo
             fi
-            
+
             make_home_bin_dir
             make_home_bin_lib_dir
             make_bashrc
@@ -44,7 +44,7 @@ function main {
 
 function parse_opts {
     local err; err=0
-    
+
     while getopts ":cdg:ho:su:" opt; do
         case $opt in
             c) opt_clone_repo=1 ;;
@@ -64,22 +64,22 @@ function parse_opts {
                 ;;
         esac
     done
-    
+
     if [[ "${opt_dry_run}" == "0" && "$(str_lower "${opt_os}")" != "$(str_lower "${DEF_OS}")" ]]; then
         err=${ERR_NEED_DRY_RUN}
         printf "When specifying an OS, must do a dry run.\n" 1>&2
     fi
-    
+
     if [[ "${err}" != "0" ]]; then
         printf "For correct usage, execute: %s -h\n" "$(basename $0)" 1>&2
     fi
-    
+
     return ${err}
 }
 
 function print_help {
     local base_name; base_name="$(basename "$0")"
-    
+
     fold -w "$(tput cols)" <<EOF
 ${base_name}: A script to init junk-n-stuff
 Version: ${VERSION}
@@ -113,7 +113,7 @@ EOF
 
 function exec_cmd {
     local cmd
-    
+
     for arg in "$@"; do
         if [[ -z "${cmd}" ]]; then
             cmd="${arg}"
@@ -124,9 +124,9 @@ function exec_cmd {
             esac
         fi
     done
-    
+
     printf "%s\n" "${cmd}"
-    
+
     if [[ "${opt_dry_run}" == 0 ]]; then
         ${cmd}
     fi
@@ -134,7 +134,7 @@ function exec_cmd {
 
 function get_git_home {
     local git_home
-    
+
     if [[ -n "${opt_git_home}" ]]; then
         git_home="${opt_git_home}"
     elif [[ -n "${JNS_GIT_HOME}" ]]; then
@@ -142,32 +142,32 @@ function get_git_home {
     else
         git_home="${DEF_GIT_HOME}"
     fi
-    
+
     printf "%s" "${git_home}"
 }
 
 function clone_repo {
     local err; err=0;
     local git_home; git_home="$(get_git_home)"
-    
+
     if [[ ! -e "${git_home}" ]]; then
         exec_cmd mkdir -p "${git_home}"
     elif [[ ! -d "${git_home}" ]]; then
         err=${ERR_GIT_HOME_NOT_DIR}
     fi
-    
+
     if [[ "${err}" == "0" ]]; then
         exec_cmd pushd "${opt_git_home}"
         exec_cmd git clone "${CLONE_REPO_URL}"
         exec_cmd popd
     fi
-    
+
     return "${err}"
 }
 
 function make_home_bin_dir {
     local home_bin_dir; home_bin_dir="${opt_user_home}/bin"
-    
+
     if [[ -e "${home_bin_dir}" ]]; then
         printf "E mkdir %s\n" "${home_bin_dir}"
     else
@@ -178,7 +178,7 @@ function make_home_bin_dir {
 
 function make_home_bin_lib_dir {
     local home_bin_lib_dir; home_bin_lib_dir="${opt_user_home}/bin/lib"
-    
+
     if [[ -e "${home_bin_lib_dir}" ]]; then
         printf "E mkdir %s\n" "${home_bin_lib_dir}"
     else
@@ -189,12 +189,12 @@ function make_home_bin_lib_dir {
 
 function make_bashrc {
     local bashrc_file; bashrc_file="${opt_user_home}/.bashrc"
-    
+
     if [[ -e "${bashrc_file}" ]]; then
         printf "E %s\n" "${bashrc_file}"
     else
         printf "+ %s\n" "${bashrc_file}"
-        
+
         if [[ "${opt_dry_run}" == 0 ]]; then
             cat > "${opt_user_home}/.bashrc" <<EOF
 #!/bin/bash
@@ -208,9 +208,9 @@ EOF
 function make_symbolic_links {
     local jns_src_dir; jns_src_dir="$(get_git_home)/junk-n-stuff/src"
     local home_bin_dir; home_bin_dir="${opt_user_home}/bin"
-    
+
     make_os_symbolic_links
-    
+
     # RC
     printf "> creating RC symbolic links\n"
     make_symbolic_link "${jns_src_dir}/rc/bashrc.sh"          "${opt_user_home}/.bashrc-common"
@@ -221,11 +221,12 @@ function make_symbolic_links {
     make_symbolic_link "${jns_src_dir}/rc/tmux.conf.256color" "${opt_user_home}/.tmux.conf.256color"
     make_symbolic_link "${jns_src_dir}/rc/tmux-functions.sh"  "${opt_user_home}/.tmux-functions.sh"
     make_symbolic_link "${jns_src_dir}/rc/vimrc"              "${opt_user_home}/.vimrc"
-    
+
     # Scripts
     printf "> creating executable symbolic links - user commands\n"
     make_symbolic_link "${jns_src_dir}/al.py"           "${home_bin_dir}/al"
     make_symbolic_link "${jns_src_dir}/alpha.py"        "${home_bin_dir}/alpha"
+    make_symbolic_link "${jns_src_dir}/cheat.py"        "${home_bin_dir}/cheat"
     make_symbolic_link "${jns_src_dir}/fnd.sh"          "${home_bin_dir}/fnd"
     make_symbolic_link "${jns_src_dir}/init-jns.sh"     "${home_bin_dir}/init-jns"
     make_symbolic_link "${jns_src_dir}/kalp.py"         "${home_bin_dir}/kalp"
@@ -242,7 +243,7 @@ function make_symbolic_links {
     make_symbolic_link "${jns_src_dir}/unite.py"        "${home_bin_dir}/unite"
     make_symbolic_link "${jns_src_dir}/ununite.py"      "${home_bin_dir}/ununite"
     make_symbolic_link "${jns_src_dir}/uuu.py"          "${home_bin_dir}/uuu"
-    
+
     # Lib Scripts - tmux
     printf "> creating executable symbolic links - lib/tmux\n"
     make_symbolic_link "${jns_src_dir}/tmuxlib/_get_tmux_major_version.sh"      "${home_bin_dir}/lib/_get_tmux_major_version"
@@ -258,16 +259,16 @@ function make_symbolic_links {
 
 function make_os_symbolic_links {
     local oslc; oslc="$(str_lower "${opt_os}")"
-    
+
     if [[ "${oslc}" == "gnu/linux" || "${oslc}" == "linux" ]]; then
         printf "> creating OS specific symbolic links for %s\n" "${opt_os}"
         make_symbolic_link "${opt_user_home}/Documents" "${opt_user_home}/docs"
         make_symbolic_link "${opt_user_home}/Desktop"   "${opt_user_home}/desktop"
     elif [[ "${oslc}" == "cygwin" ]]; then
         local winhome
-        
+
         printf "> creating OS specific symbolic links for %s\n" "${opt_os}"
-        
+
         # The `cygpath' command only exists in Cygwin, and the `USERPROFILE' env. var. only exists in Windows
         # environments.  This check is to make sure the script does not error out when manually specifying the OS to be
         # Cygwin.
@@ -276,7 +277,7 @@ function make_os_symbolic_links {
         else
             winhome="/cygdrive/c/Users/${USER}"
         fi
-        
+
         make_symbolic_link "${winhome}"           "${opt_user_home}/winhome"
         make_symbolic_link "${winhome}/Documents" "${opt_user_home}/Documents"
         make_symbolic_link "${winhome}/Documents" "${opt_user_home}/docs"
@@ -289,7 +290,7 @@ function make_os_symbolic_links {
 function make_symbolic_link {
     local src; src="$1"
     local dest; dest="$2"
-    
+
     # If a symlink / file already exists, check to see if it should be replaced
     if [[ -e "${dest}" || -L "${dest}" ]]; then
         # If overriding existing symlinks, make sure the symlink to replace is actually a symlink.  If it is not a
