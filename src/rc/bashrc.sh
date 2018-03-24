@@ -107,14 +107,14 @@ function _create_ps1 {
         ps1="${ps1}\h" # host up to fisrt period (.)
     fi
 
-    ps1="${ps1}:"  # colon (:)
-    ps1="${ps1}\w" # current directory with $HOME as tilda (~)
-
     if _is_in_git_repo; then
         ps1="${ps1}\[\e[92m\]"            # make git branch green
-        ps1="${ps1} $(_print_git_branch)" # print git branch
+        ps1="${ps1}@$(_print_git_branch)" # print git branch
         ps1="${ps1}\[\e[m\]"              # clear git branch color
     fi
+
+    ps1="${ps1}:"  # colon (:)
+    ps1="${ps1}\w" # current directory with $HOME as tilda (~)
 
     if [ "${last_exit_code}" -ne "0" ]; then
         ps1="${ps1}\[\e[31m\]"          # make exit code red
@@ -122,8 +122,8 @@ function _create_ps1 {
         ps1="${ps1}\[\e[m\]"            # clear exit code color
     fi
 
-    ps1="${ps1}\$"                       # dollar sign ($).  pound (#) when root
-    ps1="${ps1} "                        # space ( )
+    ps1="${ps1}\$" # dollar sign ($).  pound (#) when root
+    ps1="${ps1} "  # space ( )
 
     export PS1="${ps1}"
 }
@@ -187,6 +187,11 @@ alias cdp..='cd "$(dirname "$(pwd -P)")"'
 alias desktop="cd ~/Desktop"
 alias docs="cd ~/Documents"
 
+# git
+alias gdiff="git difftool --dir-diff"
+alias gdiffs="git difftool --dir-diff --staged"
+alias gitlog1="git log --pretty=oneline --abbrev-commit"
+
 # less
 alias less="less -iRP '?f%f:<stdin>.?m (%i of %m)., %lb of %L (%Pb\\%)'"
 alias les="less -S"
@@ -215,6 +220,7 @@ alias naut="nemo"
 alias open="xdg-open"
 alias pwdp='pwd -P'
 alias resource="source ~/.bashrc"
+alias tree="tree -C"
 alias volume="pavucontrol"
 alias winch="kill -SIGWINCH \$\$"
 
