@@ -113,6 +113,12 @@ function _create_ps1 {
         ps1="${ps1}\[\e[m\]"              # clear git branch color
     fi
 
+    if [[ "${PIPENV_ACTIVE}" == "1" ]]; then
+        ps1="${ps1}\[\e[95m\]" # make git branch light magenta
+        ps1="${ps1}(PE)"       # print pipenv indicator
+        ps1="${ps1}\[\e[m\]"   # clear git branch color
+    fi
+
     ps1="${ps1}:"  # colon (:)
     ps1="${ps1}\w" # current directory with $HOME as tilda (~)
 
