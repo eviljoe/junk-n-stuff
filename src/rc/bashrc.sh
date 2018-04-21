@@ -7,7 +7,7 @@ _bashrc_os="$(uname -o | tr "[:upper:]" "[:lower:]")"
 # ######### #
 
 function path {
-    printf "%s" "${PATH}" | sed "s/:/\n/g"
+    printf "%s\n" "${PATH}" | sed "s/:/\n/g"
 }
 
 function add_path {
@@ -147,6 +147,12 @@ function _can_ls_group_dirs_first {
     return $?
 }
 
+function _start_tmux {
+    if [[ -z "${TMUX}" ]] && _is_interactive && type tmux &> /dev/null; then
+        tmux
+    fi
+}
+
 # This only works in Cygwin
 if [[ "${_bashrc_os}" == "cygwin" ]]; then
     function which {
@@ -172,6 +178,7 @@ fi
 
 add_path ~/bin
 add_path ~/bin/lib
+add_path ~/bin/local
 add_path ~/.cabal/bin # location of `shellcheck'
 
 export PROMPT_COMMAND=_create_ps1
