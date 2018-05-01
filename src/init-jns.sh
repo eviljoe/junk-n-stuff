@@ -219,7 +219,6 @@ function make_symbolic_links {
     make_symbolic_link "${jns_src_dir}/rc/tmux.conf"          "${opt_user_home}/.tmux.conf"
     make_symbolic_link "${jns_src_dir}/rc/tmux.conf.8color"   "${opt_user_home}/.tmux.conf.8color"
     make_symbolic_link "${jns_src_dir}/rc/tmux.conf.256color" "${opt_user_home}/.tmux.conf.256color"
-    make_symbolic_link "${jns_src_dir}/rc/tmux-functions.sh"  "${opt_user_home}/.tmux-functions.sh"
     make_symbolic_link "${jns_src_dir}/rc/vimrc"              "${opt_user_home}/.vimrc"
 
     # Scripts
