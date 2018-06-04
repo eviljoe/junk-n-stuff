@@ -48,6 +48,8 @@ def _parse_opts():
                         help='List the available cheatsheets (default:  %(default)s)')
     parser.add_argument('-p', '--list-path', action='store_true', default=False, dest='list_paths',
                         help='Display the paths that will be searched to find the cheatsheets (default:  %(default)s)')
+    parser.add_argument('--verbose', action='store_true', default=False, dest='verbose',
+                        help='Display more information about what actions are being taken (default:  %(default)s)')
 
     return parser.parse_args()
 
@@ -120,7 +122,7 @@ def _perform_view_cheatsheet(opts):
     )
 
     if path and file_name:
-        err = _launch_cheatsheet_in_editor(path, file_name)
+        err = _launch_cheatsheet_in_editor(opts, path, file_name)
     else:
         print('Cheatsheet not found in any paths:\n{}'.format('\n'.join(_get_paths())), file=sys.stderr)
         err = ERR_CHEATSHEET_NOT_FOUND
@@ -132,9 +134,12 @@ def _perform_view_cheatsheet(opts):
 # ############################## #
 
 
-def _launch_cheatsheet_in_editor(path, cheatsheet_file):
+def _launch_cheatsheet_in_editor(opts, path, cheatsheet_file):
     cmd = _get_editor_command()
     cmd.append(os.path.join(path, cheatsheet_file))
+
+    if opts.verbose:
+        print(' '.join([shlex.quote(part) for part in cmd]), flush=True)
 
     return subprocess.call(cmd)
 
