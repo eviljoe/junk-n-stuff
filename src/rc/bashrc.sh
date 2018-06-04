@@ -114,9 +114,9 @@ function _create_ps1 {
     fi
 
     if [[ "${PIPENV_ACTIVE}" == "1" ]]; then
-        ps1="${ps1}\[\e[95m\]" # make git branch light magenta
+        ps1="${ps1}\[\e[95m\]" # make pipenv indicator light magenta
         ps1="${ps1}(PE)"       # print pipenv indicator
-        ps1="${ps1}\[\e[m\]"   # clear git branch color
+        ps1="${ps1}\[\e[m\]"   # clear pipenv indicator color
     fi
 
     ps1="${ps1}:"  # colon (:)
