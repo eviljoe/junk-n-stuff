@@ -203,7 +203,7 @@ alias docs="cd ~/Documents"
 # git
 alias gdiff="git difftool --dir-diff"
 alias gdiffs="git difftool --dir-diff --staged"
-alias gitlog1="git log --pretty=oneline --abbrev-commit"
+alias gl1="gitlog1"
 
 # less
 alias less="less -iRP '?f%f:<stdin>.?m (%i of %m)., %lb of %L (%Pb\\%)'"
