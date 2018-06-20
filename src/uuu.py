@@ -20,6 +20,7 @@ from uuulib.updaters import initjns
 from uuulib.updaters import npm
 from uuulib.updaters import pip
 from uuulib.updaters import pip3
+from uuulib.updaters import rustgit
 from uuulib.updaters import svn
 from uuulib.updaters import svnd
 
@@ -32,6 +33,7 @@ UPDATERS = [
     initjns.InitJNSUpdater(),
     pip.PipUpdater(),
     pip3.PipUpdater(),
+    rustgit.RustGitUpdater(),
     npm.NPMUpdater(),
     cabal.CabalUpdater(),
     choco.ChocoUpdater(),
@@ -77,11 +79,18 @@ def create_help_epilog():
     e.append('  {}'.format(get_default_config_file_name()))
     e.append('Each line of the file should be in the following format:')
     e.append('  <COMMAND> [ARGUMENT]')
-    e.append('The comamnds are the same as their corresponding command line argument, but without the leading --.  For '
+    e.append('The commands are the same as their corresponding command line argument, but without the leading --.  For '
              'example, to specify a git repository:')
     e.append('  git ~/Documents/git/junk-n-stuff')
     e.append('For commands without an argument, just specify the command.  For example:')
     e.append('  atom')
+    e.append('The rustgit updater requires a more complex argument format that contains three parts separated by a '
+             'comma:')
+    e.append('  rustgit GIT_URL,PROJECT_HOME,EXE_NAME')
+    e.append('The GIT_URL is the URL that you would use to clone a Git project.  The PROJECT_HOME is the directory that'
+             'should be the root for the project.  The EXE_NAME is the command that should be used to invoke the '
+             'program after it has been installed & updated.  For example:')
+    e.append('  rustgit https://gitlab.com/eviljoe/sysmonitor.git,/opt/local/sysmonitor,sysmonitor')
     e.append('')
     e.append('CONFIGURATION FILE NOTES')
     e.append(' * Empty lines and lines containing only whitespace are ignored')

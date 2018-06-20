@@ -30,16 +30,19 @@ class AbstractUpdater(metaclass=abc.ABCMeta):
     
     def is_config_command(self, ccmd):
         return ccmd.cmd.lower() == self.get_config_command()
-    
-    def update_opts_add_directory(self, ccmd, directories):
+
+    @staticmethod
+    def update_opts_add_directory(ccmd, directories):
         _verify_has_argument(ccmd, argtype='directory')
         directories.append(_normalize_home_dir(ccmd.arg))
-    
-    def update_opts_set_file(self, ccmd, opts, argument_name):
+
+    @staticmethod
+    def update_opts_set_file(ccmd, opts, argument_name):
         _verify_has_argument(ccmd, argtype='file')
         setattr(opts, argument_name, _normalize_home_dir(ccmd.arg))
     
-    def update_opts_add_argument(self, ccmd, arguments):
+    @staticmethod
+    def update_opts_add_argument(ccmd, arguments):
         _verify_has_argument(ccmd)
         arguments.append(ccmd.arg)
 
@@ -69,8 +72,9 @@ class AbstractRepoUpdater(AbstractUpdater, metaclass=abc.ABCMeta):
         for repo_dir in self.get_repos(opts):
             self.update_repo(opts=opts, runner=runner, directory=repo_dir, repo_type=self.get_repo_type(),
                              config_directory=self.get_config_directory(), cmd=self.get_update_cmd())
-    
-    def update_repo(self, opts, runner, directory, repo_type, config_directory, cmd):
+
+    @staticmethod
+    def update_repo(opts, runner, directory, repo_type, config_directory, cmd):
         if os.path.exists(os.path.join(directory, config_directory)):
             runner.run(opts=opts, cmds=[cmd], cwd=directory,
                        title='updating {} repository: {}'.format(repo_type, directory))

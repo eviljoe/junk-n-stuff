@@ -8,7 +8,7 @@ _CMD = 'git'
 class GitUpdater(abstractupdater.AbstractRepoUpdater):
     def add_help_argument(self, parser):
         parser.add_argument('--' + _CMD, action='append', default=[], metavar='git_repo', dest='git_dirs',
-                            help='Specify a git reposotory to be updated')
+                            help='Specify a git repository to be updated')
     
     def get_config_command(self):
         return _CMD

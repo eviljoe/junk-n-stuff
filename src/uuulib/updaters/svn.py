@@ -8,7 +8,7 @@ _CMD = 'svn'
 class SVNUpdater(abstractupdater.AbstractRepoUpdater):
     def add_help_argument(self, parser):
         parser.add_argument('--' + _CMD, action='append', default=[], metavar='svn_repo', dest='svn_dirs',
-                            help='Specify an SVN reposotory to be updated')
+                            help='Specify an SVN repository to be updated')
     
     def get_config_command(self):
         return _CMD
