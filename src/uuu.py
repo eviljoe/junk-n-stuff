@@ -26,19 +26,19 @@ from uuulib.updaters import svnd
 
 
 UPDATERS = [
-    svn.SVNUpdater(),
-    svnd.SVNDUpdater(),
-    git.GitUpdater(),
-    gitd.GitdUpdater(),
-    initjns.InitJNSUpdater(),
-    pip.PipUpdater(),
-    pip3.PipUpdater(),
-    rustgit.RustGitUpdater(),
-    npm.NPMUpdater(),
+    atom.AtomUpdater(),
     cabal.CabalUpdater(),
     choco.ChocoUpdater(),
     cygwin.CygwinUpdater(),
-    atom.AtomUpdater()
+    git.GitUpdater(),
+    gitd.GitdUpdater(),
+    initjns.InitJNSUpdater(),
+    npm.NPMUpdater(),
+    pip.PipUpdater(),
+    pip3.PipUpdater(),
+    rustgit.RustGitUpdater(),
+    svn.SVNUpdater(),
+    svnd.SVNDUpdater(),
 ]
 
 
