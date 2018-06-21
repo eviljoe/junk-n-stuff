@@ -62,7 +62,7 @@ def parse_args():
         updater.add_help_argument(parser)
     
     parser.add_argument('--dry-run', action='store_true', default=False, dest='dry_run',
-                        help='Ouput what actions will be performed without taking them (default: %(default)s)')
+                        help='Output what actions will be performed without taking them (default: %(default)s)')
     parser.add_argument('--no-config', action='store_true', default=False, dest='no_config',
                         help='Do not read the configuration file (default: %(default)s)')
     parser.add_argument('--verbose', action='store_true', default=False, dest='verbose',
