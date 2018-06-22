@@ -1,16 +1,10 @@
 #!/usr/bin/env python3
 
-import subprocess
+from jnscommons import jnsgit
 
 
 def main():
-    branch = check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
-    commit_count = check_output(['git', 'rev-list', '--count', 'master...{}'.format(branch)])
-    print(commit_count)
-
-
-def check_output(cmd):
-    return subprocess.check_output(cmd).decode('utf-8').strip()
+    print(jnsgit.commit_count_between('master', jnsgit.branch_name()))
 
 
 if __name__ == '__main__':

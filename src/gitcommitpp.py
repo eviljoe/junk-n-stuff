@@ -2,10 +2,9 @@
 
 import argparse
 import re
-import shlex
-import subprocess
 import sys
 
+from jnscommons import jnsgit
 
 #############
 # Constants #
@@ -56,7 +55,7 @@ def parse_args():
 
 
 def _git_stage_all(opts):
-    _call(opts, ['git', 'add', '--all'])
+    jnsgit.stage_all(dry_run=opts.dry_run, print_cmd=True)
 
 
 ########################
@@ -65,13 +64,15 @@ def _git_stage_all(opts):
 
 
 def _git_commit_next(opts):
-    _call(opts, ['git', 'commit', '--message', _get_commit_msg()])
+    exit_code = jnsgit.commit(msg=_get_commit_msg(), dry_run=opts.dry_run, print_cmd=True, strict=False)
+
+    if exit_code != 0:
+        raise ExitCodeError('Commit failed', exit_code)
 
 
 def _get_commit_msg():
     branch = _get_branch()
-    last_commit_msg = _get_last_commit_msg()
-    commit_msg = ''
+    last_commit_msg = jnsgit.last_commit_msg()
 
     if last_commit_msg.startswith(branch):
         commit_msg = _get_commit_msg_from_last(last_commit_msg)
@@ -86,16 +87,12 @@ def _get_commit_msg():
 
 
 def _get_branch():
-    branch = _check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
+    branch = jnsgit.branch_name()
 
     if branch == 'master':
         raise ExitCodeError('Do not auto commit to master!')
 
     return branch
-
-
-def _get_last_commit_msg():
-    return _check_output(['git', 'log', '--format=%s', '-1'])
 
 
 def _get_commit_msg_from_last(last_commit_msg):
@@ -120,29 +117,6 @@ def _get_commit_msg_from_msg_and_index(msg, index):
         msg = msg[0:msg_len - over_by - 3] + '...'
 
     return msg + ' ' + str(index)
-
-
-#####################
-# Utility Functions #
-#####################
-
-
-def _call(opts, cmd):
-    _print_command(cmd)
-    exit_code = 0
-
-    if not opts.dry_run:
-        exit_code = subprocess.call(cmd)
-
-    return exit_code
-
-
-def _check_output(cmd):
-    return subprocess.check_output(cmd).decode('utf-8').strip()
-
-
-def _print_command(cmd):
-    print(_DIM + ' '.join([shlex.quote(part) for part in cmd]) + _PLAIN, flush=True)
 
 
 ###################
