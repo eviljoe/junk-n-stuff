@@ -234,7 +234,7 @@ function make_symbolic_links {
     make_symbolic_link "${jns_src_dir}/gitcommitpp.py"         "${home_bin_dir}/gitcommitpp"
     make_symbolic_link "${jns_src_dir}/gitlog1.bash"           "${home_bin_dir}/gitlog1"
     make_symbolic_link "${jns_src_dir}/gitroh.py"              "${home_bin_dir}/gitroh"
-    make_symbolic_link "${jns_src_dir}/gitrom.bash"            "${home_bin_dir}/gitrom"
+    make_symbolic_link "${jns_src_dir}/gitrom.py"              "${home_bin_dir}/gitrom"
     make_symbolic_link "${jns_src_dir}/init-jns.sh"            "${home_bin_dir}/init-jns"
     make_symbolic_link "${jns_src_dir}/kalp.py"                "${home_bin_dir}/kalp"
     make_symbolic_link "${jns_src_dir}/lesspipe.sh"            "${home_bin_dir}/lesspipe"

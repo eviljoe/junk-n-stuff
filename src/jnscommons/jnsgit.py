@@ -9,6 +9,10 @@ def branch_name(cwd='.', dry_run=False, print_cmd=False):
     return _check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], cwd=cwd, dry_run=dry_run, print_cmd=print_cmd)
 
 
+def checkout(branch_name, cwd='.', dry_run=False, print_cmd=False, strict=True):
+    return _call(['git', 'checkout', branch_name], cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
+
+
 def commit(msg=None, cwd='.', dry_run=False, print_cmd=False, strict=True):
     cmd = ['git', 'commit']
 
@@ -39,11 +43,15 @@ def rebase(upstream, branch=None, interactive=False, cwd='.', dry_run=False, pri
     if branch:
         cmd.append(branch)
 
-    _call(cmd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
+    _call(cmd, cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
 
 
 def stage_all(cwd='.', dry_run=False, print_cmd=False, strict=True):
     _call(['git', 'add', '--all'], cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
+
+
+def pull(cwd='.', dry_run=False, print_cmd=False, strict=True):
+    _call(['git', 'pull'], cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
 
 
 def _call(cmd, cwd='.', dry_run=False, print_cmd=False, strict=True):
