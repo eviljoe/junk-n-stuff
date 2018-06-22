@@ -201,6 +201,7 @@ alias desktop="cd ~/Desktop"
 alias docs="cd ~/Documents"
 
 # git
+alias gcpp="gitcommitpp"
 alias gdiff="git difftool --dir-diff"
 alias gdiffs="git difftool --dir-diff --staged"
 alias gl1="gitlog1"
