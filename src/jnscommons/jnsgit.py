@@ -20,7 +20,7 @@ def commit(msg=None, cwd='.', dry_run=False, print_cmd=False, strict=True):
         cmd.append('--message')
         cmd.append(msg)
 
-    _call(cmd, cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
+    return _call(cmd, cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
 
 
 def commit_count_between(branch1, branch2, cwd='.', dry_run=False, print_cmd=False):
@@ -43,15 +43,15 @@ def rebase(upstream, branch=None, interactive=False, cwd='.', dry_run=False, pri
     if branch:
         cmd.append(branch)
 
-    _call(cmd, cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
+    return _call(cmd, cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
 
 
 def stage_all(cwd='.', dry_run=False, print_cmd=False, strict=True):
-    _call(['git', 'add', '--all'], cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
+    return _call(['git', 'add', '--all'], cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
 
 
 def pull(cwd='.', dry_run=False, print_cmd=False, strict=True):
-    _call(['git', 'pull'], cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
+    return _call(['git', 'pull'], cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
 
 
 def _call(cmd, cwd='.', dry_run=False, print_cmd=False, strict=True):

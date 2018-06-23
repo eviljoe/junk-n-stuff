@@ -11,8 +11,6 @@ from jnscommons import jnsgit
 #############
 
 
-_DIM = '\033[2m'
-_PLAIN = '\033[0m'
 _MAX_GIT_SUBJECT_LENGTH = 50
 
 
@@ -74,14 +72,14 @@ def _get_commit_msg():
     branch = _get_branch()
     last_commit_msg = jnsgit.last_commit_msg()
 
-    if last_commit_msg.startswith(branch):
-        commit_msg = _get_commit_msg_from_last(last_commit_msg)
+    if _can_increment_commit(last_commit_msg, branch):
+        commit_msg = _get_incremented_commit_msg(last_commit_msg, branch)
     else:
-        commit_msg = '{} 1'.format(branch)
+        commit_msg = _get_numbered_commit_msg(branch, 1)
 
     commit_msg = commit_msg.strip()
     if not commit_msg:
-        raise ExitCodeError('Cannot auto-increment commit message from last: {}'.format(last_commit_msg))
+        raise ExitCodeError('Cannot determine quick save commit message from last: {}'.format(last_commit_msg))
 
     return commit_msg
 
@@ -95,28 +93,43 @@ def _get_branch():
     return branch
 
 
-def _get_commit_msg_from_last(last_commit_msg):
-    last_commit_msg_parts = last_commit_msg.split()
-    last_commit_index = last_commit_msg_parts[-1]
-    commit_msg = ''
-
-    if re.match('[0-9]+', last_commit_index):
-        commit_msg = _get_commit_msg_from_msg_and_index(
-            ' '.join(last_commit_msg_parts[0:-1]),
-            int(last_commit_index) + 1
-        )
-
-    return commit_msg
+def _can_increment_commit(last_commit_msg, branch):
+    return last_commit_msg.startswith(branch) or _is_truncated_commit_msg(last_commit_msg, branch)
 
 
-def _get_commit_msg_from_msg_and_index(msg, index):
-    msg_len = len(msg)
-    over_by = (msg_len + len(str(index)) + 1) - _MAX_GIT_SUBJECT_LENGTH
+def _is_truncated_commit_msg(msg, branch):
+    truncated = False
+
+    if len(msg) == _MAX_GIT_SUBJECT_LENGTH:
+        regex = re.compile('\.\.\. [0-9]+$')
+        match = regex.search(msg)
+
+        if match:
+            untruncated_msg = msg[0:match.start()]
+            truncated = branch != untruncated_msg and branch.startswith(untruncated_msg)
+
+    return truncated
+
+
+def _get_incremented_commit_msg(last_commit_msg, branch):
+    last_number = int(last_commit_msg.split()[-1])
+    return _get_numbered_commit_msg(branch, last_number + 1)
+
+
+def _get_numbered_commit_msg(branch, number):
+    number_str = str(number)
+    max_len = _MAX_GIT_SUBJECT_LENGTH - len(number_str) - 1
+    return truncate(branch, max_len) + ' ' + number_str
+
+
+def truncate(str, length):
+    str_len = len(str)
+    over_by = str_len - length
 
     if over_by > 0:
-        msg = msg[0:msg_len - over_by - 3] + '...'
+        str = str[0:str_len - over_by - 3] + '...'
 
-    return msg + ' ' + str(index)
+    return str
 
 
 ###################
