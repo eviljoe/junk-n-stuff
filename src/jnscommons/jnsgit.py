@@ -24,8 +24,13 @@ def commit(msg=None, cwd='.', dry_run=False, print_cmd=False, strict=True):
 
 
 def commit_count_between(branch1, branch2, cwd='.', dry_run=False, print_cmd=False):
-    return int(_check_output(['git', 'rev-list', '--count', '{}...{}'.format(branch1, branch2)],
-                             cwd=cwd, dry_run=dry_run, print_cmd=print_cmd))
+    count = _check_output(['git', 'rev-list', '--count', '{}...{}'.format(branch1, branch2)],
+                          cwd=cwd, dry_run=dry_run, print_cmd=print_cmd)
+
+    if not dry_run:
+        count = int(count)
+
+    return count
 
 
 def last_commit_msg(cwd='.', dry_run=False, print_cmd=False):

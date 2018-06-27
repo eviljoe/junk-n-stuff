@@ -54,6 +54,7 @@ def parse_args():
 
 def _git_stage_all(opts):
     jnsgit.stage_all(dry_run=opts.dry_run, print_cmd=True)
+    print()
 
 
 ########################

@@ -15,10 +15,7 @@ _PLAIN = '\033[0m'
 def main():
     Branch = collections.namedtuple('Branch', ['name', 'selected'])
     output = subprocess.check_output(['git', 'branch', '--list', '--no-color']).decode('utf-8')
-    branches = [
-        Branch(name=line[2:], selected=line.strip().startswith('*'))
-        for line in output.splitlines()
-    ]
+    branches = [Branch(name=line[2:], selected=line.strip().startswith('*')) for line in output.splitlines()]
 
     for i, branch in enumerate(branches):
         line = _GREEN if branch.selected else ''
