@@ -1,0 +1,24 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "c91d5a68e2aebb33a44b274f1218e05e4ee1b3b4bc541730955c6f42cd3b3007"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_version": "3.5"
+        },
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.python.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "junk-n-stuff-commons": {
+            "git": "https://gitlab.com/eviljoe/junk-n-stuff-commons.git"
+        }
+    },
+    "develop": {}
+}
