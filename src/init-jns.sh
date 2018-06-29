@@ -229,12 +229,6 @@ function make_symbolic_links {
     make_symbolic_link "${jns_src_dir}/cinnamon-fix-lock.bash" "${home_bin_dir}/cinnamon-fix-lock"
     make_symbolic_link "${jns_src_dir}/cinnamon-fix.bash"      "${home_bin_dir}/cinnamon-fix"
     make_symbolic_link "${jns_src_dir}/fnd.sh"                 "${home_bin_dir}/fnd"
-    make_symbolic_link "${jns_src_dir}/gitbp.py"               "${home_bin_dir}/gitbp"
-    make_symbolic_link "${jns_src_dir}/gitcc.py"               "${home_bin_dir}/gitcc"
-    make_symbolic_link "${jns_src_dir}/gitlog1.bash"           "${home_bin_dir}/gitlog1"
-    make_symbolic_link "${jns_src_dir}/gitquicksave.py"        "${home_bin_dir}/gitquicksave"
-    make_symbolic_link "${jns_src_dir}/gitroh.py"              "${home_bin_dir}/gitroh"
-    make_symbolic_link "${jns_src_dir}/gitrom.py"              "${home_bin_dir}/gitrom"
     make_symbolic_link "${jns_src_dir}/init-jns.sh"            "${home_bin_dir}/init-jns"
     make_symbolic_link "${jns_src_dir}/kalp.py"                "${home_bin_dir}/kalp"
     make_symbolic_link "${jns_src_dir}/lesspipe.sh"            "${home_bin_dir}/lesspipe"
@@ -249,6 +243,14 @@ function make_symbolic_links {
     make_symbolic_link "${jns_src_dir}/unite.py"               "${home_bin_dir}/unite"
     make_symbolic_link "${jns_src_dir}/ununite.py"             "${home_bin_dir}/ununite"
     make_symbolic_link "${jns_src_dir}/uuu.py"                 "${home_bin_dir}/uuu"
+
+    # Git Scripts
+    make_symbolic_link_git "${jns_src_dir}/gitbp.py"        "${home_bin_dir}" "gitbp"        "git-bp"
+    make_symbolic_link_git "${jns_src_dir}/gitcc.py"        "${home_bin_dir}" "gitcc"        "git-cc"
+    make_symbolic_link_git "${jns_src_dir}/gitlog1.bash"    "${home_bin_dir}" "gitlog1"      "git-log1"
+    make_symbolic_link_git "${jns_src_dir}/gitquicksave.py" "${home_bin_dir}" "gitquicksave" "git-quicksave"
+    make_symbolic_link_git "${jns_src_dir}/gitroh.py"       "${home_bin_dir}" "gitroh"       "git-roh"
+    make_symbolic_link_git "${jns_src_dir}/gitrom.py"       "${home_bin_dir}" "gitrom"       "git-rom"
 
     # Lib Scripts - tmux
     printf "> creating executable symbolic links - lib/tmux\n"
@@ -312,6 +314,16 @@ function make_symbolic_link {
         printf "+ "
         exec_cmd ln -s "${src}" "${dest}"
     fi
+}
+
+function make_symbolic_link_git {
+    local src; src="$1"
+    local dest_dir; dest_dir="$2"
+    local direct_name; direct_name="$3"
+    local subcommand_name; subcommand_name="$4"
+
+    make_symbolic_link "${src}" "${dest_dir}/${direct_name}"
+    make_symbolic_link "${src}" "${dest_dir}/${subcommand_name}"
 }
 
 function str_lower {
