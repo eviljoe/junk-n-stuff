@@ -23,8 +23,18 @@ pipenv run pyinstaller --noconfirm --onefile --clean --path src src/${MAIN_FILE}
 
 ```
 
-After generating the `.spec` file, make sure to remove all absolute directory references within it before adding it to
-the VCS.
+Notes:
+*  After generating the `.spec` file, make sure to remove all absolute directory references within it before adding it
+   to the VCS.
+
+*  In order for these commands to work, the Python development package needs to be installed.
+   
+   *  For Python v3.5, "python3.5-dev" needs to be installed.
+   *  For Python v3.6, "python3.6-dev" needs to be installed.
+
+   After the appropriate package has been installed the Pipenv environment might need to be reinstalled:
+
+   *  `pipenv --python 3.6 && pipenv install --dev`
 
 
 ## Build using .spec file
