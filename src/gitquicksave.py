@@ -43,6 +43,10 @@ def parse_args():
 
     parser.add_argument('--dry-run', action='store_true', default=False, dest='dry_run',
                         help='Output what actions will be performed without taking them (default: %(default)s)')
+    parser.add_argument('--no-stage', action='store_true', default=False, dest='no_stage',
+                        help='Do not stage any files before committing (default: %(default)s)')
+    parser.add_argument('--number', action='store', default=None, dest='number',
+                        help='Explicitly set the number to be used in the commit message (default: %(default)s)')
 
     return parser.parse_args()
 
@@ -53,8 +57,9 @@ def parse_args():
 
 
 def _git_stage_all(opts):
-    jnsgit.stage_all(dry_run=opts.dry_run, print_cmd=True)
-    print()
+    if not opts.no_stage:
+        jnsgit.stage_all(dry_run=opts.dry_run, print_cmd=True)
+        print()
 
 
 ########################
@@ -63,7 +68,8 @@ def _git_stage_all(opts):
 
 
 def _git_commit_next(opts):
-    exit_code = jnsgit.commit(msg=_get_commit_msg(), dry_run=opts.dry_run, print_cmd=True, strict=False)
+    msg = _get_numbered_commit_msg(_get_branch(), opts.number) if opts.number else _get_commit_msg()
+    exit_code = jnsgit.commit(msg=msg, dry_run=opts.dry_run, print_cmd=True, strict=False)
 
     if exit_code != 0:
         raise ExitCodeError('Commit failed', exit_code)
