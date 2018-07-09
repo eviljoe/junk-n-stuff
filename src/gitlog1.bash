@@ -1,3 +1,3 @@
 #!/bin/bash
 
-git log --pretty=oneline --abbrev-commit
+git log --format=oneline --abbrev-commit --no-decorate "$@"
