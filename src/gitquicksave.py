@@ -95,7 +95,7 @@ def _get_branch():
     branch = jnsgit.branch_name()
 
     if branch == 'master':
-        raise ExitCodeError('Do not auto commit to master!')
+        raise ExitCodeError('Do not quick save to master!')
 
     return branch
 
@@ -157,3 +157,4 @@ class ExitCodeError(Exception):
 
 if __name__ == '__main__':
     main()
+
