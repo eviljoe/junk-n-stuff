@@ -1,10 +1,50 @@
+" ****** "
+" Vundle "
+" ****** "
+
+set nocompatible " be iMproved, required
+filetype off     " required
+
+set rtp+=/opt/local/Vundle.vim
+call vundle#begin()
+
+Plugin 'VundleVim/Vundle.vim' " let Vundle manage Vundle, required
+Plugin 'kchmck/vim-coffee-script'
+Plugin 'scrooloose/nerdtree'
+Plugin 'sickill/vim-monokai'
+Plugin 'tpope/vim-rails'
+Plugin 'valloric/youcompleteme'
+Plugin 'vim-ruby/vim-ruby'
+
+call vundle#end()
+filetype plugin indent on
+
+" ************ "
+" Key Mappings "
+" ************ "
+
+" Alt+\ - show tree
+execute "set <M-\\>=\e\\"
+noremap <M-\> :NERDTreeToggle<cr>
+
+" ************ "
+" Color Scheme "
+" ************ "
+
+" Set the color scheme
+:if $TERM != 'cygwin' && !empty(glob('~/.vim/bundle/vim-monokai/colors/monokai.vim'))
+:  colorscheme monokai
+:endif
+
 " Allow syntax highlighting
 :syntax on
 
-" Set the color scheme
-:if $TERM != 'cygwin' && !empty(glob('~/.vim/colors/monokai.vim'))
-:  colorscheme monokai
-:endif
+" ***** "
+" Misc. "
+" ***** "
+
+" Show line numbers in gutter
+:set number
 
 " Set up tab width to be 4 and allow smart indenting
 :set tabstop=4
@@ -23,3 +63,11 @@
 
 " Allows left & right arrow keys to wrap across line boundries
 :set whichwrap+=<,>,h,l,[,]
+
+" ****************** "
+" File Type Settings "
+" ****************** "
+
+" Git
+autocmd FileType gitcommit setl colorcolumn=50,72
+
