@@ -70,4 +70,5 @@ noremap <M-\> :NERDTreeToggle<cr>
 
 " Git
 autocmd FileType gitcommit setl colorcolumn=50,72
-
+autocmd FileType gitcommit setl spell spelllang=en_us
+autocmd FileType gitcommit setl spell spellfile=${HOME}/.vim/en.utf-8.add

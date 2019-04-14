@@ -59,6 +59,21 @@ def pull(cwd='.', dry_run=False, print_cmd=False, strict=True):
     return _call(['git', 'pull'], cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
 
 
+def push(repository=None, branch=None, set_upstream=False, cwd='.', dry_run=False, print_cmd=False, strict=True):
+    cmd = ['git', 'push']
+
+    if set_upstream:
+        cmd.append('--set-upstream')
+
+    if repository:
+        cmd.append(repository)
+
+    if branch:
+        cmd.append(branch)
+
+    return _call(cmd, cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
+
+
 def _call(cmd, cwd='.', dry_run=False, print_cmd=False, strict=True):
     exit_code = 0
 

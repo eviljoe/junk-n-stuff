@@ -11,8 +11,8 @@ from jnscommons import jnsgit
 #############
 
 
+_DEFAULT_REPOSITORY = 'origin'
 _MAX_GIT_SUBJECT_LENGTH = 50
-
 
 ###############
 # Main Method #
@@ -24,8 +24,7 @@ def main():
 
     try:
         opts = parse_args()
-        _git_stage_all(opts)
-        _git_commit_next(opts)
+        quicksave(opts)
     except ExitCodeError as e:
         exit_code = e.exit_code
         print(str(e), file=sys.stderr, flush=True)
@@ -33,9 +32,21 @@ def main():
     sys.exit(exit_code)
 
 
-#######################
-# Git Stage Functions #
-#######################
+def quicksave(opts):
+    if opts.stage:
+        _git_stage_all(opts)
+        print()
+
+    _git_commit_next(opts)
+
+    if opts.push or opts.push_upstream:
+        print()
+        _git_push(opts, opts.push_upstream)
+
+
+########################
+# CLI Option Functions #
+########################
 
 
 def parse_args():
@@ -43,23 +54,33 @@ def parse_args():
 
     parser.add_argument('--dry-run', action='store_true', default=False, dest='dry_run',
                         help='Output what actions will be performed without taking them (default: %(default)s)')
-    parser.add_argument('--no-stage', action='store_true', default=False, dest='no_stage',
-                        help='Do not stage any files before committing (default: %(default)s)')
+    parser.add_argument('--no-stage', action='store_false', default=True, dest='stage',
+                        help='Do not stage any files before committing (default: stage before committing)')
     parser.add_argument('--number', action='store', default=None, dest='number',
-                        help='Explicitly set the number to be used in the commit message (default: %(default)s)')
+                        help='Explicitly set the number to be used in the commit message')
+    parser.add_argument('--push', '-p', action='store_true', default=False, dest='push',
+                        help='Push after committing (default: %(default)s)')
+    parser.add_argument('--pushu', '-P', action='store_true', default=False, dest='push_upstream',
+                        help='Push and set upstream after committing (default: %(default)s)')
 
     return parser.parse_args()
 
 
 #######################
-# Git Stage Functions #
+# Misc. Git Functions #
 #######################
 
 
 def _git_stage_all(opts):
-    if not opts.no_stage:
-        jnsgit.stage_all(dry_run=opts.dry_run, print_cmd=True)
-        print()
+    jnsgit.stage_all(dry_run=opts.dry_run, print_cmd=True)
+
+
+def _git_push(opts, set_upstream):
+    if set_upstream:
+        jnsgit.push(set_upstream=True, repository=_DEFAULT_REPOSITORY, branch=jnsgit.branch_name(),
+                    dry_run=opts.dry_run, print_cmd=True)
+    else:
+        jnsgit.push(dry_run=opts.dry_run, print_cmd=True)
 
 
 ########################
@@ -126,17 +147,22 @@ def _get_incremented_commit_msg(last_commit_msg, branch):
 def _get_numbered_commit_msg(branch, number):
     number_str = str(number)
     max_len = _MAX_GIT_SUBJECT_LENGTH - len(number_str) - 1
-    return truncate(branch, max_len) + ' ' + number_str
+    return _truncate(branch, max_len) + ' ' + number_str
 
 
-def truncate(str, length):
-    str_len = len(str)
+#####################
+# Utility Functions #
+#####################
+
+
+def _truncate(string, length):
+    str_len = len(string)
     over_by = str_len - length
 
     if over_by > 0:
-        str = str[0:str_len - over_by - 3] + '...'
+        string = string[0:str_len - over_by - 3] + '...'
 
-    return str
+    return string
 
 
 ###################
@@ -157,4 +183,3 @@ class ExitCodeError(Exception):
 
 if __name__ == '__main__':
     main()
-
