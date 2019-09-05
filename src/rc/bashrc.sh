@@ -206,6 +206,8 @@ alias gdiffh="git difftool --dir-diff HEAD"
 alias gdiffs="git difftool --dir-diff --staged"
 alias gitqs="gitquicksave"
 alias gl1="gitlog1"
+alias gqp="git quicksave --push"
+alias gqpu="git quicksave --pushu"
 
 # less
 alias less="less -iRP '?f%f:<stdin>.?m (%i of %m)., %lb of %L (%Pb\\%)'"

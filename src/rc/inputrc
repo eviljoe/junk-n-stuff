@@ -33,6 +33,7 @@ set completion-map-case on
 
 # CTRL+BACKSPACE to delete from cursor to beginning of word
 "\037": backward-kill-word
+"\C-h": backward-kill-word
 
 # CTRL+SHIFT+BACKSPACE to delete from cursor to beginning of line
 "\302\237": backward-kill-line
