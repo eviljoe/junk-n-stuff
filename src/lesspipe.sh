@@ -15,12 +15,22 @@
 
 function read_java_archive() {
     local file; file="$1"
-    
+
     printf "/* *********** */\n/* MANIFEST.MF */\n/* *********** */\n\n"
     unzip -p "${file}" "META-INF/MANIFEST.MF" 2>/dev/null
-    
+
     printf "/* ***** */\n/* FILES */\n/* ***** */\n\n"
     jar tvf "${file}" 2>/dev/null
+}
+
+function read_deb_file() {
+    local file; file="$1"
+
+    printf "/* **** */\n/* INFO */\n/* **** */\n\n"
+    dpkg-deb --info "${file}" 2>/dev/null
+
+    printf "\n/* ******** */\n/* CONTENTS */\n/* ******** */\n\n"
+    dpkg-deb --contents "${file}"  2>/dev/null
 }
 
 case "$1" in
@@ -30,20 +40,23 @@ case "$1" in
     *.tar.gz)  gzip -dc "$1" | tar tvf - 2>/dev/null  ;;
     *.tgz)     gzip -dc "$1" | tar tvf - 2>/dev/null  ;;
     *.gz)      gzip -lv "$1" 2>/dev/null              ;;
-    
+
     # ZIP
     *.Z)   uncompress -c "$1"  2>/dev/null ;;
     *.zip) unzip -v $1 2>/dev/null         ;;
-    
+
     # Java
     *.ear)   read_java_archive "$1" ;;
     *.jar)   read_java_archive "$1" ;;
     *.war)   read_java_archive "$1" ;;
     *.class) javap -verbose -private -sysinfo -constants "$1" ;;
-    
+
     # ASAR
     *.asar) asar list "$1" ;;
-    
+
     # FLAC
     *.flac) metaflac --list "$1" 2>/dev/null ;;
+
+    # DEB
+    *.deb) read_deb_file "$1" ;;
 esac
