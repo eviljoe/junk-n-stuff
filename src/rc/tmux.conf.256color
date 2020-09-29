@@ -30,9 +30,7 @@ set -g default-terminal "screen-256color"
 set -g status-position top
 set -g status-justify left
 set -g status-interval 1
-set -g status-bg "#282828"
-set -g status-fg "#f8f8f0"
-set -g status-attr none
+set -g status-style "fg=#f8f8f0,bg=#282828,none"
 
 set -g status-left ''
 set -g status-left-length 20
@@ -45,43 +43,30 @@ set -g status-right-length 50
 # Window Status (a.k.a. Tab Headings)
 # -----------------------------------
 setw -g window-status-format " #F#I: #W "
-setw -g window-status-bg "#49483e"
-setw -g window-status-fg "#c0c0c0"
-setw -g window-status-attr none
+setw -g window-status-style "fg=#c0c0c0,bg=#49483e,none"
 
-setw -g window-status-current-format "#[bg=#c0c0c0,fg=#f92672] #F#[fg=#282828]#I: #W "
-setw -g window-status-current-attr none
+setw -g window-status-current-format "#[fg=#f92672] #F#[fg=#282828]#I: #W "
+setw -g window-status-current-style "bg=#c0c0c0,none"
 
-setw -g window-status-activity-style "bg=#808080" # for windows with output displayed while window was not active
+setw -g window-status-activity-style "bg=#808080,none" # for windows with output displayed while window was not active
 
-setw -g window-status-bell-style "fg=#66d9ef" # for windows that had an alert  while window was not active
-setw -g window-status-bell-attr none
+setw -g window-status-bell-style "fg=#66d9ef,none" # for windows that had an alert  while window was not active
 
 # Split Panes
 # -----------
-set -g pane-border-bg "#282828"
-set -g pane-border-fg "#529b2f"
-
-set -g pane-active-border-bg "#c0c0c0"
-set -g pane-active-border-fg "#529b2f"
-
+set -g pane-border-style "fg=#529b2f,bg=#282828"
+set -g pane-active-border-style "fg=#529b2f,bg=#c0c0c0"
 set -g display-panes-colour "#ae81ff"
 set -g display-panes-active-colour "#f92672"
 
 # Messaging
 # ---------
-set -g message-bg "#282828"
-set -g message-fg "#f92672"
-set -g message-attr none
-
-set -g message-command-bg "#282828"
-set -g message-command-fg "#f92672"
+set -g message-style "fg=#f92672,bg=#282828,none"
+set -g message-command-style "fg=#f92672,bg=#282828"
 
 # Selection Mode
 # --------------
-setw -g mode-bg "#75715e"
-setw -g mode-fg "#f8f8f2"
-setw -g mode-attr bold
+setw -g mode-style "fg=#f8f8f2,bg=#75715e,bold"
 
 # Clock Mode
 # ----------

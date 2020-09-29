@@ -263,6 +263,7 @@ function make_symbolic_links {
     make_symbolic_link "${jns_src_dir}/tmuxlib/_is_tmux_v2_0__2_3m.sh"          "${home_bin_dir}/lib/_is_tmux_v2_0__2_3m"
     make_symbolic_link "${jns_src_dir}/tmuxlib/_is_tmux_v2_4p.sh"               "${home_bin_dir}/lib/_is_tmux_v2_4p"
     make_symbolic_link "${jns_src_dir}/tmuxlib/_is_tmux_v2.sh"                  "${home_bin_dir}/lib/_is_tmux_v2"
+    make_symbolic_link "${jns_src_dir}/tmuxlib/_is_tmux_v2p.sh"                 "${home_bin_dir}/lib/_is_tmux_v2p"
 }
 
 function make_os_symbolic_links {
