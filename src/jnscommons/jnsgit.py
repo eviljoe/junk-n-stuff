@@ -59,8 +59,11 @@ def pull(cwd='.', dry_run=False, print_cmd=False, strict=True):
     return _call(['git', 'pull'], cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
 
 
-def push(repository=None, branch=None, set_upstream=False, cwd='.', dry_run=False, print_cmd=False, strict=True):
+def push(repository=None, branch=None, set_upstream=False, force=False, cwd='.', dry_run=False, print_cmd=False, strict=True):
     cmd = ['git', 'push']
+
+    if force:
+        cmd.append('--force')
 
     if set_upstream:
         cmd.append('--set-upstream')

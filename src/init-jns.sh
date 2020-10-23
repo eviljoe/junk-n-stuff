@@ -245,12 +245,13 @@ function make_symbolic_links {
     make_symbolic_link "${jns_src_dir}/uuu.py"                 "${home_bin_dir}/uuu"
 
     # Git Scripts
-    make_symbolic_link_git "${jns_src_dir}/gitbp.py"        "${home_bin_dir}" "gitbp"        "git-bp"
-    make_symbolic_link_git "${jns_src_dir}/gitcc.py"        "${home_bin_dir}" "gitcc"        "git-cc"
-    make_symbolic_link_git "${jns_src_dir}/gitlog1.bash"    "${home_bin_dir}" "gitlog1"      "git-log1"
-    make_symbolic_link_git "${jns_src_dir}/gitquicksave.py" "${home_bin_dir}" "gitquicksave" "git-quicksave"
-    make_symbolic_link_git "${jns_src_dir}/gitroh.py"       "${home_bin_dir}" "gitroh"       "git-roh"
-    make_symbolic_link_git "${jns_src_dir}/gitrom.py"       "${home_bin_dir}" "gitrom"       "git-rom"
+    make_symbolic_link_git "${jns_src_dir}/gitbp.py"          "${home_bin_dir}" "gitbp"          "git-bp"
+    make_symbolic_link_git "${jns_src_dir}/gitcc.py"          "${home_bin_dir}" "gitcc"          "git-cc"
+    make_symbolic_link_git "${jns_src_dir}/gitlog1.bash"      "${home_bin_dir}" "gitlog1"        "git-log1"
+    make_symbolic_link_git "${jns_src_dir}/gitquicksave.py"   "${home_bin_dir}" "gitquicksave"   "git-quicksave"
+    make_symbolic_link_git "${jns_src_dir}/gitrebasechain.py" "${home_bin_dir}" "gitrebasechain" "git-rebase-chain"
+    make_symbolic_link_git "${jns_src_dir}/gitroh.py"         "${home_bin_dir}" "gitroh"         "git-roh"
+    make_symbolic_link_git "${jns_src_dir}/gitrom.py"         "${home_bin_dir}" "gitrom"         "git-rom"
 
     # Lib Scripts - tmux
     printf "> creating executable symbolic links - lib/tmux\n"
