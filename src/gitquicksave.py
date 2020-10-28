@@ -14,6 +14,7 @@ from jnscommons import jnsgit
 _DEFAULT_REPOSITORY = 'origin'
 _MAX_GIT_SUBJECT_LENGTH = 50
 
+
 ###############
 # Main Method #
 ###############

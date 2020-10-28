@@ -6,6 +6,15 @@ import sys
 from jnscommons import jnsgit
 
 
+#############
+# Constants #
+#############
+
+
+_GREEN = '\033[32m'
+_PLAIN = '\033[0m'
+
+
 ###############
 # Main Method #
 ###############
@@ -55,7 +64,7 @@ def rebase_all(opts):
         downstream_branch = opts.branches[index + 1]
         index += 1
 
-        print(f'Rebasing {downstream_branch}', flush=True)
+        print(f'{_GREEN}Rebasing {downstream_branch}{_PLAIN}', flush=True)
         rebase(opts, upstream_branch, downstream_branch)
         print(flush=True)
 
