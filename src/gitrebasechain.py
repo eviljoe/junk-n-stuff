@@ -43,8 +43,6 @@ def parse_args():
 
     parser.add_argument('--dry-run', action='store_true', default=False, dest='dry_run',
                         help='Output what actions will be performed without taking them (default: %(default)s)')
-    parser.add_argument('-i', '--interactive', action='store_true', default=False, dest='interactive',
-                        help='Perform interactive rebases (default: %(default)s)')
     parser.add_argument('branches', metavar='branch', type=str, nargs='+',
                         help='The branches to be rebased upon each other.  The first branch will not be rebased.')
 
@@ -74,7 +72,7 @@ def rebase(opts, upstream_branch, downstream_branch):
     jnsgit.pull(dry_run=opts.dry_run, print_cmd=True, strict=True)
     jnsgit.checkout(downstream_branch, dry_run=opts.dry_run, print_cmd=True, strict=True)
     jnsgit.pull(dry_run=opts.dry_run, print_cmd=True, strict=True)
-    jnsgit.rebase(upstream_branch, interactive=opts.interactive, dry_run=opts.dry_run, print_cmd=True, strict=True)
+    jnsgit.status(dry_run=opts.dry_run, print_cmd=True, strict=True)
     jnsgit.push(force=True, dry_run=opts.dry_run, print_cmd=True, strict=True)
 
 

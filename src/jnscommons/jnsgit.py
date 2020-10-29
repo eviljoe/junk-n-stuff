@@ -5,15 +5,15 @@ _DIM = '\033[2m'
 _PLAIN = '\033[0m'
 
 
-def branch_name(cwd='.', dry_run=False, print_cmd=False):
+def branch_name(cwd='.', dry_run=False, print_cmd=False) -> str:
     return _check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], cwd=cwd, dry_run=dry_run, print_cmd=print_cmd)
 
 
-def checkout(branch_name, cwd='.', dry_run=False, print_cmd=False, strict=True):
+def checkout(branch_name, cwd='.', dry_run=False, print_cmd=False, strict=True) -> int:
     return _call(['git', 'checkout', branch_name], cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
 
 
-def commit(msg=None, cwd='.', dry_run=False, print_cmd=False, strict=True):
+def commit(msg=None, cwd='.', dry_run=False, print_cmd=False, strict=True) -> int:
     cmd = ['git', 'commit']
 
     if msg:
@@ -23,7 +23,7 @@ def commit(msg=None, cwd='.', dry_run=False, print_cmd=False, strict=True):
     return _call(cmd, cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
 
 
-def commit_count_between(branch1, branch2, cwd='.', dry_run=False, print_cmd=False):
+def commit_count_between(branch1, branch2, cwd='.', dry_run=False, print_cmd=False) -> int:
     count = _check_output(['git', 'rev-list', '--count', '{}...{}'.format(branch1, branch2)],
                           cwd=cwd, dry_run=dry_run, print_cmd=print_cmd)
 
@@ -32,12 +32,11 @@ def commit_count_between(branch1, branch2, cwd='.', dry_run=False, print_cmd=Fal
 
     return count
 
-
-def last_commit_msg(cwd='.', dry_run=False, print_cmd=False):
+def last_commit_msg(cwd='.', dry_run=False, print_cmd=False) -> str:
     return _check_output(['git', 'log', '--format=%s', '-1'], cwd=cwd, dry_run=dry_run, print_cmd=print_cmd)
 
 
-def rebase(upstream, branch=None, interactive=False, cwd='.', dry_run=False, print_cmd=False, strict=True):
+def rebase(upstream, branch=None, interactive=False, cwd='.', dry_run=False, print_cmd=False, strict=True) -> int:
     cmd = ['git', 'rebase']
 
     if interactive:
@@ -50,16 +49,19 @@ def rebase(upstream, branch=None, interactive=False, cwd='.', dry_run=False, pri
 
     return _call(cmd, cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
 
+def status(cwd='.', dry_run=False, print_cmd=False, strict=True) -> int:
+    return _call(['git', 'status'], cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
 
-def stage_all(cwd='.', dry_run=False, print_cmd=False, strict=True):
+
+def stage_all(cwd='.', dry_run=False, print_cmd=False, strict=True) -> int:
     return _call(['git', 'add', '--all'], cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
 
 
-def pull(cwd='.', dry_run=False, print_cmd=False, strict=True):
+def pull(cwd='.', dry_run=False, print_cmd=False, strict=True) -> int:
     return _call(['git', 'pull'], cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
 
 
-def push(repository=None, branch=None, set_upstream=False, force=False, cwd='.', dry_run=False, print_cmd=False, strict=True):
+def push(repository=None, branch=None, set_upstream=False, force=False, cwd='.', dry_run=False, print_cmd=False, strict=True) -> int:
     cmd = ['git', 'push']
 
     if force:
@@ -77,7 +79,7 @@ def push(repository=None, branch=None, set_upstream=False, force=False, cwd='.',
     return _call(cmd, cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
 
 
-def _call(cmd, cwd='.', dry_run=False, print_cmd=False, strict=True):
+def _call(cmd, cwd='.', dry_run=False, print_cmd=False, strict=True) -> int:
     exit_code = 0
 
     if print_cmd:
@@ -86,13 +88,12 @@ def _call(cmd, cwd='.', dry_run=False, print_cmd=False, strict=True):
     if not dry_run:
         if strict:
             exit_code = subprocess.check_call(cmd, cwd=cwd)
-        else:
-            exit_code = subprocess.call(cmd, cwd=cwd)
+        else: -> intd=cwd)
 
     return exit_code
 
 
-def _check_output(cmd, cwd='.', dry_run=False, print_cmd=False):
+def _check_output(cmd, cwd='.', dry_run=False, print_cmd=False) -> str:
     output = ''
 
     if print_cmd:
@@ -104,5 +105,5 @@ def _check_output(cmd, cwd='.', dry_run=False, print_cmd=False):
     return output
 
 
-def _print_command(cmd):
+def _print_command(cmd) -> None:
     print(_DIM + ' '.join([shlex.quote(part) for part in cmd]) + _PLAIN, flush=True)
