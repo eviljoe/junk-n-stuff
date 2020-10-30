@@ -88,7 +88,8 @@ def _call(cmd, cwd='.', dry_run=False, print_cmd=False, strict=True) -> int:
     if not dry_run:
         if strict:
             exit_code = subprocess.check_call(cmd, cwd=cwd)
-        else: -> intd=cwd)
+        else:
+            exit_code = subprocess.call(cmd, cwd=cwd)
 
     return exit_code
 
