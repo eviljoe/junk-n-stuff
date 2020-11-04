@@ -32,6 +32,7 @@ def commit_count_between(branch1, branch2, cwd='.', dry_run=False, print_cmd=Fal
 
     return count
 
+
 def last_commit_msg(cwd='.', dry_run=False, print_cmd=False) -> str:
     return _check_output(['git', 'log', '--format=%s', '-1'], cwd=cwd, dry_run=dry_run, print_cmd=print_cmd)
 
@@ -48,6 +49,7 @@ def rebase(upstream, branch=None, interactive=False, cwd='.', dry_run=False, pri
         cmd.append(branch)
 
     return _call(cmd, cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
+
 
 def status(cwd='.', dry_run=False, print_cmd=False, strict=True) -> int:
     return _call(['git', 'status'], cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)

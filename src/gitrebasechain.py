@@ -72,6 +72,7 @@ def rebase(opts, upstream_branch, downstream_branch):
     jnsgit.pull(dry_run=opts.dry_run, print_cmd=True, strict=True)
     jnsgit.checkout(downstream_branch, dry_run=opts.dry_run, print_cmd=True, strict=True)
     jnsgit.pull(dry_run=opts.dry_run, print_cmd=True, strict=True)
+    jnsgit.rebase(upstream_branch, interactive=True, dry_run=opts.dry_run, print_cmd=True, strict=True)
     jnsgit.status(dry_run=opts.dry_run, print_cmd=True, strict=True)
     jnsgit.push(force=True, dry_run=opts.dry_run, print_cmd=True, strict=True)
 
