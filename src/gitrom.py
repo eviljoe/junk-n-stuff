@@ -6,6 +6,9 @@ import sys
 from jnscommons import jnsgit
 
 
+_PROTECTED_BRANCHES = ['master', 'main', 'dev', 'develop', 'development']
+
+
 def main():
     exit_code = 0
 
@@ -38,8 +41,8 @@ def _parse_args():
 def _validate(opts):
     current_branch = jnsgit.branch_name()
 
-    if current_branch == 'master':
-        raise ExitCodeError('Do not rebase master!')
+    if current_branch in _PROTECTED_BRANCHES:
+        raise ExitCodeError(f'Do not rebase {current_branch}!')
 
     if current_branch == opts.branch:
         raise ExitCodeError('Cannot rebase {} onto itself'.format(current_branch))
