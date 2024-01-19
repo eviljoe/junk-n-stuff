@@ -13,12 +13,15 @@ def checkout(branch_name, cwd='.', dry_run=False, print_cmd=False, strict=True) 
     return _call(['git', 'checkout', branch_name], cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
 
 
-def commit(msg=None, cwd='.', dry_run=False, print_cmd=False, strict=True) -> int:
+def commit(msg=None, cwd='.', dry_run=False, no_verify=False, print_cmd=False, strict=True) -> int:
     cmd = ['git', 'commit']
 
     if msg:
         cmd.append('--message')
         cmd.append(msg)
+
+    if no_verify:
+        cmd.append('--no-verify')
 
     return _call(cmd, cwd=cwd, dry_run=dry_run, print_cmd=print_cmd, strict=strict)
 

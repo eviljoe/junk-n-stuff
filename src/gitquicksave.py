@@ -91,7 +91,7 @@ def _git_push(opts, set_upstream):
 
 def _git_commit_next(opts):
     msg = _get_numbered_commit_msg(_get_branch(), opts.number) if opts.number else _get_commit_msg()
-    exit_code = jnsgit.commit(msg=msg, dry_run=opts.dry_run, print_cmd=True, strict=False)
+    exit_code = jnsgit.commit(msg=msg, dry_run=opts.dry_run, no_verify=True, print_cmd=True, strict=False)
 
     if exit_code != 0:
         raise ExitCodeError('Commit failed', exit_code)
