@@ -113,6 +113,12 @@ function _create_ps1 {
         ps1="${ps1}\[\e[m\]"              # clear git branch color
     fi
 
+    if [ ! -z "${VIRTUAL_ENV}" ]; then
+        ps1="${ps1}\[\e[95m\]" # make venv indicator light magenta
+        ps1="${ps1}(VE)"       # print venv indicator
+        ps1="${ps1}\[\e[m\]"   # clear venv indicator color
+    fi
+
     if [[ "${PIPENV_ACTIVE}" == "1" ]]; then
         ps1="${ps1}\[\e[95m\]" # make pipenv indicator light magenta
         ps1="${ps1}(PE)"       # print pipenv indicator
@@ -237,6 +243,7 @@ alias naut="nemo"
 alias open="xdg-open"
 alias pwdp='pwd -P'
 alias resource="source ~/.bashrc"
+alias svba='source venv/bin/activate'
 alias tree="tree -C"
 alias volume="pavucontrol"
 alias winch="kill -SIGWINCH \$\$"
