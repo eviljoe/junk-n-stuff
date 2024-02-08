@@ -67,6 +67,9 @@ noremap <M-\> :NERDTreeToggle<cr>
 " Allow use of the mouse in all modes
 :set mouse=a
 
+" Highlight the line that contains the cursor
+:set cursorline
+
 " ****************** "
 " File Type Settings "
 " ****************** "
