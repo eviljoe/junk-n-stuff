@@ -188,6 +188,7 @@ add_path ~/bin/local
 add_path ~/.cabal/bin # location of `shellcheck'
 
 export PROMPT_COMMAND=_create_ps1
+export LESS="--mouse --ignore-case --RAW-CONTROL-CHARS --prompt='?f%f:<stdin>.?m (%i of %m)., %lb of %L (%Pb\\%)'"
 export LESSOPEN="|${HOME}/bin/lesspipe %s"
 export HISTCONTROL="ignoreboth" # Ignore adjacent duplicate lines and lines that start with a space
 
@@ -216,7 +217,6 @@ alias gqp="git quicksave --push"
 alias gqpu="git quicksave --pushu"
 
 # less
-alias less="less -iRP '?f%f:<stdin>.?m (%i of %m)., %lb of %L (%Pb\\%)'"
 alias les="less -S"
 alias lgs="less +G -S"
 
