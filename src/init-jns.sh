@@ -3,19 +3,19 @@
 set -e # fail on any errors
 
 readonly VERSION="1.2.0"
-readonly DEF_GIT_HOME="${HOME}/Documents/git"
+readonly DEF_CODE_HOME="${HOME}/Documents/code"
 readonly DEF_OS="$(uname -o)"
 readonly CLONE_REPO_URL="https://github.com/eviljoe/junk-n-stuff.git"
 
 readonly ERR_INVALID_OPT=3
 readonly ERR_OPT_REQUIRES_ARG=4
-readonly ERR_GIT_HOME_NOT_DIR=5
+readonly ERR_CODE_HOME_NOT_DIR=5
 readonly ERR_NEED_DRY_RUN=6
 
 opt_clone_repo=0
 opt_print_help=0
 opt_dry_run=0
-opt_git_home=""
+opt_code_home=""
 opt_user_home="${HOME}"
 opt_os="${DEF_OS}"
 opt_override_symlinks=0
@@ -49,7 +49,7 @@ function parse_opts {
         case $opt in
             c) opt_clone_repo=1 ;;
             d) opt_dry_run=1 ;;
-            g) opt_git_home="${OPTARG}" ;;
+            g) opt_code_home="${OPTARG}" ;;
             h) opt_print_help=1 ;;
             o) opt_os="${OPTARG}" ;;
             s) opt_override_symlinks=1 ;;
@@ -88,7 +88,7 @@ Usage: ${base_name} [options]
 Options:
   -c: Clone the junk-n-stuff repo. (default: no)
   -d: Do a dry run.  Do not actually perform any actions. (default: no)
-  -g: Git home directory.  (default: ${DEF_GIT_HOME})
+  -g: Git home directory.  (default: ${DEF_CODE_HOME})
   -h: Print this help message and exit
   -o <OS>: Operating system.  Can only be used during dry runs.  (default: ${DEF_OS})
   -s: Overwrite existing symbolic links. (default: no)
@@ -106,8 +106,8 @@ Notes:
       R Replaced
   * The Git home directory will be determined using these steps.  If it is found, the subsequent steps will be ignored.
       1. Use the value of the \`-g' option
-      2. Use the value of the \`JNS_GIT_HOME' environment variable
-      3. Use the default directory: ${DEF_GIT_HOME}
+      2. Use the value of the \`JNS_CODE_HOME' environment variable
+      3. Use the default directory: ${DEF_CODE_HOME}
 EOF
 }
 
@@ -132,32 +132,32 @@ function exec_cmd {
     fi
 }
 
-function get_git_home {
-    local git_home
+function get_code_home {
+    local code_home
 
-    if [[ -n "${opt_git_home}" ]]; then
-        git_home="${opt_git_home}"
-    elif [[ -n "${JNS_GIT_HOME}" ]]; then
-        git_home="${JNS_GIT_HOME}"
+    if [[ -n "${opt_code_home}" ]]; then
+        code_home="${opt_code_home}"
+    elif [[ -n "${JNS_CODE_HOME}" ]]; then
+        code_home="${JNS_CODE_HOME}"
     else
-        git_home="${DEF_GIT_HOME}"
+        code_home="${DEF_CODE_HOME}"
     fi
 
-    printf "%s" "${git_home}"
+    printf "%s" "${code_home}"
 }
 
 function clone_repo {
     local err; err=0;
-    local git_home; git_home="$(get_git_home)"
+    local code_home; code_home="$(get_code_home)"
 
-    if [[ ! -e "${git_home}" ]]; then
-        exec_cmd mkdir -p "${git_home}"
-    elif [[ ! -d "${git_home}" ]]; then
-        err=${ERR_GIT_HOME_NOT_DIR}
+    if [[ ! -e "${code_home}" ]]; then
+        exec_cmd mkdir -p "${code_home}"
+    elif [[ ! -d "${code_home}" ]]; then
+        err=${ERR_CODE_HOME_NOT_DIR}
     fi
 
     if [[ "${err}" == "0" ]]; then
-        exec_cmd pushd "${opt_git_home}"
+        exec_cmd pushd "${opt_code_home}"
         exec_cmd git clone "${CLONE_REPO_URL}"
         exec_cmd popd
     fi
@@ -206,7 +206,7 @@ EOF
 }
 
 function make_symbolic_links {
-    local jns_src_dir; jns_src_dir="$(get_git_home)/junk-n-stuff/src"
+    local jns_src_dir; jns_src_dir="$(get_code_home)/junk-n-stuff/src"
     local home_bin_dir; home_bin_dir="${opt_user_home}/bin"
 
     make_os_symbolic_links
