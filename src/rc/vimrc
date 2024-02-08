@@ -64,6 +64,9 @@ noremap <M-\> :NERDTreeToggle<cr>
 " Allows left & right arrow keys to wrap across line boundries
 :set whichwrap+=<,>,h,l,[,]
 
+" Allow use of the mouse in all modes
+:set mouse=a
+
 " ****************** "
 " File Type Settings "
 " ****************** "
