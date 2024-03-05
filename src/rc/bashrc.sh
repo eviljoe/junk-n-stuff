@@ -243,9 +243,9 @@ alias naut="nemo"
 alias open="xdg-open"
 alias pwdp='pwd -P'
 alias resource="source ~/.bashrc"
-alias svba='source venv/bin/activate'
 alias tree="tree -C"
 alias volume="pavucontrol"
+alias vactivate='source venv/bin/activate'
 alias winch="kill -SIGWINCH \$\$"
 
 # OS Specific Aliases
