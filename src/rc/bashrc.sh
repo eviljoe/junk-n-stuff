@@ -46,12 +46,18 @@ function str_lower {
 function _is_interactive {
     local interactive;
 
-    case "$-" in
-        *i*) interactive=0 ;;
-        *) interactive=1 ;;
-    esac
+    #case "$-" in
+    #    *i*) interactive=0 ;;
+    #    *) interactive=1 ;;
+    #esac
 
-    return ${interactive}
+    if [[ $- =~ i ]]; then
+        interactive=0
+    else
+        interactive=1
+    fi
+
+    return "${interactive}"
 }
 
 
@@ -256,6 +262,9 @@ elif [[ "${_bashrc_os}" == "darwin" ]]; then
     alias cls="clear"
     unalias open
     alias naut="open"
+elif [[ "${_bashrc_os}" == "gnu/linux" && -n "${WSL_DISTRO_NAME}" ]]; then
+    unalias open
+    alias naut="explorer.exe"
 fi
 
 # Terminal Emulator Specific Aliases
