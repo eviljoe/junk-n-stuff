@@ -242,7 +242,6 @@ function make_symbolic_links {
     make_symbolic_link "${jns_src_dir}/tread.py"               "${home_bin_dir}/tread"
     make_symbolic_link "${jns_src_dir}/unite.py"               "${home_bin_dir}/unite"
     make_symbolic_link "${jns_src_dir}/ununite.py"             "${home_bin_dir}/ununite"
-    make_symbolic_link "${jns_src_dir}/uuu.py"                 "${home_bin_dir}/uuu"
 
     # Git Scripts
     make_symbolic_link_git "${jns_src_dir}/gitbp.py"          "${home_bin_dir}" "gitbp"          "git-bp"
