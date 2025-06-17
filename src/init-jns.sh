@@ -223,6 +223,7 @@ function make_symbolic_links {
 
     # Scripts
     printf "> creating executable symbolic links - user commands\n"
+    make_symbolic_link "${jns_src_dir}/catvids.py"            "${home_bin_dir}/catvids"
     make_symbolic_link "${jns_src_dir}/cheat.py"              "${home_bin_dir}/cheat"
     make_symbolic_link "${jns_src_dir}/compare-hashdeep.bash" "${home_bin_dir}/compare-hashdeep"
     make_symbolic_link "${jns_src_dir}/fnd.sh"                "${home_bin_dir}/fnd"
