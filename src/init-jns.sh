@@ -215,6 +215,7 @@ function make_symbolic_links {
     printf "> creating RC symbolic links\n"
     make_symbolic_link "${jns_src_dir}/rc/bashrc.sh"          "${opt_user_home}/.bashrc-common"
     make_symbolic_link "${jns_src_dir}/rc/emacs"              "${opt_user_home}/.emacs"
+    make_symbolic_link "${jns_src_dir}/rc/gitconfig.toml"     "${opt_user_home}/.gitconfig"
     make_symbolic_link "${jns_src_dir}/rc/inputrc"            "${opt_user_home}/.inputrc"
     make_symbolic_link "${jns_src_dir}/rc/tmux.conf"          "${opt_user_home}/.tmux.conf"
     make_symbolic_link "${jns_src_dir}/rc/tmux.conf.8color"   "${opt_user_home}/.tmux.conf.8color"
