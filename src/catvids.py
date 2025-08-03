@@ -88,8 +88,7 @@ def _concat_vids_for_source(opts: CvOpts, source_directory: str) -> None:
 
         with open(listing_file_name, 'w', encoding='utf-8') as listing_file:
             for vid_file_name in sorted(os.listdir(source_directory)):
-                listing_file.write(f"file '{os.path.join(source_directory, vid_file_name)}'\n")
-
+                listing_file.write(f"file '{os.path.abspath(os.path.join(source_directory, vid_file_name))}'\n")
 
         print(f'Listing for {output_file_name}:')
         with open(listing_file_name, 'r', encoding='utf-8') as listing_file:
