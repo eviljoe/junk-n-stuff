@@ -172,6 +172,35 @@ if [[ "${_bashrc_os}" == "cygwin" ]]; then
     }
 fi
 
+function va {
+    local found=0
+    local index=0
+    local return_code=0
+    local locations=( \
+        'venv/bin/activate' \
+        '.venv/bin/activate' \
+    )
+
+    while [[ "${found}" == "0" && "${index}" -lt "${#locations[@]}" ]]; do
+        local location="${locations[$index]}"
+
+        if [[ -e "${location}" ]]; then
+            printf '\e[2msource %s\e[0m\n' "${location}"
+            source "${location}"
+            found=1
+        fi
+
+        ((index++))
+    done
+
+    if [[ "${found}" == "0" ]]; then
+        printf 'No virtual environment found\n' 1>&2
+        return_code=1
+    fi
+
+    return "${return_code}"
+}
+
 # ############# #
 # Shell Options #
 # ############# #
@@ -251,7 +280,6 @@ alias pwdp='pwd -P'
 alias resource="source ~/.bashrc"
 alias tree="tree -C"
 alias volume="pavucontrol"
-alias vactivate='source venv/bin/activate'
 alias winch="kill -SIGWINCH \$\$"
 
 # OS Specific Aliases
