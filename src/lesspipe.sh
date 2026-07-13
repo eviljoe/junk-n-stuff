@@ -43,7 +43,7 @@ case "$1" in
 
     # ZIP
     *.Z)   uncompress -c "$1"  2>/dev/null ;;
-    *.zip) unzip -v $1 2>/dev/null         ;;
+    *.zip) unzip -v "$1" 2>/dev/null         ;;
 
     # Java
     *.ear)   read_java_archive "$1" ;;
